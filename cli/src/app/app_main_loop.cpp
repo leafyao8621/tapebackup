@@ -3,34 +3,40 @@
 #include "app.h"
 #include "../util/util.h"
 
-void TBCLI::App::main_loop() {
+void TBCLI::App::main_loop() const {
     printf("%s: ", "r/w");
     fflush(stdout);
     int res = 0;
     for (res = getchar(); res != 'r' && res != 'w'; res = getchar());
     if (res == 'r') {
-        this->read();
+        this->read_dev();
     } else {
-        this->write();
+        this->write_dev();
     }
 }
 
-void TBCLI::App::read() {
-    bool initialized = TBCLI::Util::check_dev(this->dev);
+void TBCLI::App::read_dev() const {
+    char buf[64];
+    TBCLI::Util::check_dev(this->dev, buf);
+    bool initialized = this->signature.check(buf);
     if (!initialized) {
-        throw Err::DEVICE_NOT_INTIALIZED;
+        throw DEVICE_NOT_INTIALIZED;
     }
     TBCLI::Util::read_archive(this->dev);
 }
 
-void TBCLI::App::write() {
-    bool initialized = TBCLI::Util::check_dev(this->dev);
+void TBCLI::App::write_dev() const {
+    char buf[64];
+    TBCLI::Util::check_dev(this->dev, buf);
+    bool initialized = this->signature.check(buf);
     int res = 0;
     if (!initialized) {
+        this->signature.generate(buf);
         printf("%s: ", "Write protect? [y/n]");
         fflush(stdout);
         for (res = getchar(); res != 'y' && res != 'n'; res = getchar());
-        TBCLI::Util::init_dev(dev, res == 'y');
+        TBCLI::Util::init_dev(dev, buf, res == 'y');
+        this->signature.commit(buf);
     }
     bool write_protect = TBCLI::Util::check_dev_write_protection(this->dev);
     if (initialized && write_protect) {

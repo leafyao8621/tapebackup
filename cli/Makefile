@@ -5,7 +5,7 @@ OBJ = $(SRC:.cpp=.o)
 BIN = tbcli
 
 %.o: %.cpp
-	$(CPP) -c $< -o $@ $(CPPFLAGS)
+	$(CPP) -g -c $< -o $@ $(CPPFLAGS)
 
 $(BIN): $(OBJ)
 	$(CPP) $(OBJ) -o $(BIN)

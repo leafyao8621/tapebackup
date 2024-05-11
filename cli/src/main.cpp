@@ -23,8 +23,8 @@ int main(int argc, char **argv) {
         }
     } catch (TBCLI::Util::Err err) {
         switch (err) {
-        case TBCLI::Util::Err::DIRECTORY_CREATION:
-            puts("~/backup creation failed");
+        case TBCLI::Util::DEVICE_WRITE:
+            printf("Failed to write to device %s\n", argv[1]);
             break;
         case TBCLI::Util::Err::DIRECTORY_LISTING:
             puts("~/backup not accessible");
@@ -37,6 +37,24 @@ int main(int argc, char **argv) {
             break;
         case TBCLI::Util::Err::ARCHIVE_READ:
             puts("Archive read failed");
+            break;
+        }
+    } catch (TBCLI::App::Signature::Err err) {
+        switch (err) {
+        case TBCLI::App::Signature::Err::GENERATOR_FAIL:
+            puts("Reading from random source failed");
+            break;
+        case TBCLI::App::Signature::Err::WRITE_FAIL:
+            puts("Writing to ~/.signature failed");
+            break;
+        }
+    } catch (TBCLI::Util::Env::Err err) {
+        switch (err) {
+        case TBCLI::Util::Env::Err::DIRECTORY_CREATION:
+            puts("~/backup creation failed");
+            break;
+        case TBCLI::Util::Env::Err::FILE_CREATION:
+            puts("~/.signature creation failed");
             break;
         }
     }

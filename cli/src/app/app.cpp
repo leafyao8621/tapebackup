@@ -1,29 +1,33 @@
-#include <unistd.h>
 #include <cstring>
+#include <fcntl.h>
+#include <unistd.h>
 
 #include "app.h"
 #include "../util/util.h"
 
 TBCLI::App::App(char *dev_name) {
     puts("TBCLI");
-    this->dev = fopen(dev_name, "r+");
+    this->dev = open(dev_name, O_RDWR);
     if (!this->dev) {
         throw Err::DEVICE_OPEN;
     }
     printf("Device %s opened\n", dev_name);
     puts("Checking environment");
-    bool pass = TBCLI::Util::check_env();
+    TBCLI::Util::Env env;
+    bool pass = env.check();
     if (pass) {
         puts("Pass");
     } else {
-        puts("~/backup not found, creating");
-        TBCLI::Util::init_env();
-        puts("~/backup created");
+        puts("Initializing environment");
+        env.init();
+        puts("Environment initialized");
     }
+    puts("Initializing signature");
+    this->signature.init();
 }
 
 TBCLI::App::~App() {
     if (this->dev) {
-        fclose(this->dev);
+        close(this->dev);
     }
 }

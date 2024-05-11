@@ -2,7 +2,7 @@
 #define APP_APP_H_
 
 #include <cstdio>
-#include <pthread.h>
+#include <vector>
 
 namespace TBCLI {
     class App {
@@ -12,15 +12,31 @@ namespace TBCLI {
             DEVICE_NOT_INTIALIZED,
             DEVICE_WRITE_PROTECTED
         };
+        class Signature {
+            std::vector<std::vector<char> > valid_list;
+            int rnd_src, signature_file;
+        public:
+            enum Err {
+                GENERATOR_FAIL,
+                WRITE_FAIL
+            };
+            Signature();
+            ~Signature();
+            void init();
+            void generate(char *signature) const;
+            void commit(char *signature) const;
+            bool check(char *signature) const;
+        };
     private:
-        FILE *dev;
+        int dev;
+        Signature signature;
     public:
         App(char *dev_name);
         ~App();
-        void main_loop();
+        void main_loop() const;
     private:
-        void read();
-        void write();
+        void read_dev() const;
+        void write_dev() const;
     };
 }
 
