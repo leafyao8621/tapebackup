@@ -27,7 +27,6 @@ void TBCLI::App::read_dev() const {
 
 void TBCLI::App::write_dev() const {
     char buf[64];
-    std::cout << "Checking" << std::endl;
     TBCLI::Util::check_dev(this->dev_name, buf);
     bool initialized = this->signature.check(buf);
     int res = 0;

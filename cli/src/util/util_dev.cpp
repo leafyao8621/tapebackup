@@ -16,7 +16,6 @@ void TBCLI::Util::check_dev(char *dev_name, char *signature) {
     }
     read(dev, signature, 64);
     close(dev);
-    puts("read");
     system(oss.str().c_str());
 }
 
