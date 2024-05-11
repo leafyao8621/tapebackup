@@ -72,7 +72,7 @@ void TBCLI::Util::init_dev(
         std::cout << "Rewinded? [y/n]: ";
         std::cout.flush();
     }
-    int dev = open(dev_name, O_RDONLY);
+    int dev = open(dev_name, O_WRONLY);
     if (dev == -1) {
         throw DEVICE_OPEN;
     }
@@ -109,7 +109,7 @@ void TBCLI::Util::set_dev_write_protection(char *dev_name) {
         std::cout.flush();
     }
     unsigned short signature = 0x90b0;
-    int dev = open(dev_name, O_RDONLY);
+    int dev = open(dev_name, O_WRONLY);
     if (dev == -1) {
         close(dev);
         throw DEVICE_OPEN;
