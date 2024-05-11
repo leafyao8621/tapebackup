@@ -15,6 +15,7 @@ void TBCLI::Util::check_dev(char *dev_name, char *signature) {
         throw DEVICE_OPEN;
     }
     read(dev, signature, 64);
+    close(dev);
     system(oss.str().c_str());
 }
 
@@ -28,6 +29,7 @@ bool TBCLI::Util::check_dev_write_protection(char *dev_name) {
         throw DEVICE_OPEN;
     }
     read(dev, &signature, 2);
+    close(dev);
     system(oss.str().c_str());
     return signature == 0x90b0;
 }
@@ -43,10 +45,12 @@ void TBCLI::Util::init_dev(
     }
     ssize_t bytes_written = write(dev, signature, 64);
     if (bytes_written != 64) {
+        close(dev);
         throw DEVICE_WRITE;
     }
     unsigned short write_protection_value = write_protection ? 0x90b0 : 0xb090;
     bytes_written = write(dev, &write_protection_value, 2);
+    close(dev);
     if (bytes_written != 2) {
         throw DEVICE_WRITE;
     }
@@ -60,8 +64,10 @@ void TBCLI::Util::set_dev_write_protection(char *dev_name) {
     unsigned short signature = 0x90b0;
     int dev = open(dev_name, O_RDONLY);
     if (dev == -1) {
+        close(dev);
         throw DEVICE_OPEN;
     }
     write(dev, &signature, 2);
+    close(dev);
     system(oss.str().c_str());
 }
