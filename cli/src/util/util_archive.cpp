@@ -15,6 +15,12 @@ void TBCLI::Util::write_archive(char *dev_name) {
         std::cout << "Rewinded? [y/n]: ";
         std::cout.flush();
     }
+    std::ostringstream oss_dd_skip;
+    oss_dd_skip <<
+        "dd if=" <<
+        dev_name <<
+        " of=/dev/null bs=66 count=1";
+    system(oss_dd_skip.str().c_str());
     std::ostringstream oss_dd;
     oss_dd <<
         "dd if=" <<
