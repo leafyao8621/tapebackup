@@ -32,8 +32,8 @@ namespace TBCLI {
         void set_dev_write_protection(char *dev_name);
         void get_dir();
         void compress_dir(char *dir);
-        void write_archive(int dev);
-        void read_archive(int dev);
+        void write_archive(char *dev_name);
+        void read_archive(char *dev_name);
     }
 }
 

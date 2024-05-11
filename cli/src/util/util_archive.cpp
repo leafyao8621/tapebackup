@@ -1,61 +1,52 @@
+#include <iostream>
 #include <unistd.h>
+#include <fcntl.h>
 #include <sstream>
 #include "util.h"
 
-void TBCLI::Util::write_archive(int dev) {
+void TBCLI::Util::write_archive(char *dev_name) {
     std::ostringstream oss;
-    oss << getenv("HOME") << "/backup/backup.tar.gz";
-    lseek(dev, 68, SEEK_SET);
-    // FILE *fin = fopen(oss.str().c_str(), "rb");
-    // if (!fin) {
-    //     throw Err::ARCHIVE_WRITE;
-    // }
-    // char buf[512];
-    // size_t read = 0, written = 0;
-    // for (; (read = fread(buf, 1, 512, fin));) {
-    //     written = fwrite(buf, 1, read, dev);
-    //     fflush(dev);
-    //     if (read != written) {
-    //         throw Err::ARCHIVE_WRITE;
-    //     }
-    // }
-    // fclose(fin);
-    // unsigned trailer = 0xdeadbeef;
-    // written = fwrite(&trailer, 4, 1, dev);
-    // if (written != 1) {
-    //     throw Err::ARCHIVE_WRITE;
-    // }
+    oss << "mt -f " << dev_name << " rewind";
+    system(oss.str().c_str());
+    char res = 'n';
+    std::cout << "Rewinded? [y/n]: ";
+    std::cout.flush();
+    for (std::cin >> res; res != 'y'; std::cin >> res) {
+        std::cout << "Rewinded? [y/n]: ";
+        std::cout.flush();
+    }
+    oss.clear();
+    oss <<
+        "dd if=" <<
+        getenv("HOME") << "/backup/backup.tar.gz" <<
+        " of=" << dev_name <<
+        " status=progress";
+    system(oss.str().c_str());
 }
 
-void TBCLI::Util::read_archive(int dev) {
+void TBCLI::Util::read_archive(char *dev_name) {
     std::ostringstream oss;
-    oss << getenv("HOME") << "/backup/restore.tar.gz";
-    lseek(dev, 68, SEEK_SET);
-    // truncate(oss.str().c_str(), 0);
-    // FILE *fout = fopen(oss.str().c_str(), "wb");
-    // if (!fout) {
-    //     throw Err::ARCHIVE_WRITE;
-    // }
-    // char buf[512];
-    // size_t read = 0, written = 0;
-    // for (; (read = fread(buf, 1, 512, dev));) {
-    //     char *iter = buf;
-    //     size_t offset = 0;
-    //     for (offset = 0; offset < read; ++offset, ++iter) {
-    //         if (offset > 508) {
-    //             continue;
-    //         }
-    //         if (*(unsigned*)iter == 0xdeadbeef) {
-    //             break;
-    //         }
-    //     }
-    //     written = fwrite(buf, 1, offset, fout);
-    //     if (written != offset) {
-    //         throw Err::ARCHIVE_READ;
-    //     }
-    //     if (written < 512) {
-    //         break;
-    //     }
-    // }
-    // fclose(fout);
+    oss << "mt -f " << dev_name << " rewind";
+    system(oss.str().c_str());
+    char res = 'n';
+    std::cout << "Rewinded? [y/n]: ";
+    std::cout.flush();
+    for (std::cin >> res; res != 'y'; std::cin >> res) {
+        std::cout << "Rewinded? [y/n]: ";
+        std::cout.flush();
+    }
+    oss.clear();
+    oss <<
+        "dd if=" <<
+        dev_name <<
+        " of=/dev/null bs=66 count=1";
+    system(oss.str().c_str());
+    oss.clear();
+    oss <<
+        "dd if=" <<
+        dev_name <<
+        " of=" <<
+        getenv("HOME") << "/backup/restore.tar.gz" <<
+        " status=progress";
+    system(oss.str().c_str());
 }
