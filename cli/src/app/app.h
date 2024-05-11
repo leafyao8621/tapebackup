@@ -28,12 +28,10 @@ namespace TBCLI {
             bool check(char *signature) const;
         };
     private:
-        int dev;
         char *dev_name;
         Signature signature;
     public:
         App(char *dev_name);
-        ~App();
         void main_loop() const;
     private:
         void read_dev() const;

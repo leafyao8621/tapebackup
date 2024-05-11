@@ -23,6 +23,9 @@ int main(int argc, char **argv) {
         }
     } catch (TBCLI::Util::Err err) {
         switch (err) {
+        case TBCLI::Util::DEVICE_OPEN:
+            printf("Failed to open device %s\n", argv[1]);
+            break;
         case TBCLI::Util::DEVICE_WRITE:
             printf("Failed to write to device %s\n", argv[1]);
             break;
