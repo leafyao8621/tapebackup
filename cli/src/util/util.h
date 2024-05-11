@@ -28,7 +28,7 @@ namespace TBCLI {
         bool check_dev_write_protection(int dev, char *dev_name);
         void init_dev(
             int dev, char *signature, bool write_protection, char *dev_name);
-        void set_dev_write_protection(int dev);
+        void set_dev_write_protection(int dev, char *dev_names);
         void get_dir();
         void compress_dir(char *dir);
         void write_archive(int dev);
