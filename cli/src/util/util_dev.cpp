@@ -1,21 +1,29 @@
+#include <iostream>
+#include <sstream>
+
 #include <unistd.h>
 
 #include "util.h"
 
-void TBCLI::Util::check_dev(int dev, char *signature) {
+void TBCLI::Util::check_dev(int dev, char *signature, char *dev_name) {
     read(dev, signature, 64);
-    lseek(dev, -64, SEEK_CUR);
+    std::ostringstream oss;
+    oss << "mt -f " << dev_name << " rewind";
+    system(oss.str().c_str());
 }
 
-bool TBCLI::Util::check_dev_write_protection(int dev) {
+bool TBCLI::Util::check_dev_write_protection(int dev, char *dev_name) {
     lseek(dev, 64, SEEK_CUR);
     unsigned short signature = 0;
     read(dev, &signature, 2);
-    lseek(dev, -66, SEEK_CUR);
+    std::ostringstream oss;
+    oss << "mt -f " << dev_name << " rewind";
+    system(oss.str().c_str());
     return signature == 0x90b0;
 }
 
-void TBCLI::Util::init_dev(int dev, char *signature, bool write_protection) {
+void TBCLI::Util::init_dev(
+    int dev, char *signature, bool write_protection, char *dev_name) {
     ssize_t bytes_written = write(dev, signature, 64);
     if (bytes_written != 64) {
         throw DEVICE_WRITE;
@@ -25,12 +33,16 @@ void TBCLI::Util::init_dev(int dev, char *signature, bool write_protection) {
     if (bytes_written != 2) {
         throw DEVICE_WRITE;
     }
-    lseek(dev, -66, SEEK_CUR);
+    std::ostringstream oss;
+    oss << "mt -f " << dev_name << " rewind";
+    system(oss.str().c_str());
 }
 
-void TBCLI::Util::set_dev_write_protection(int dev) {
+void TBCLI::Util::set_dev_write_protection(int dev, char *dev_name) {
     lseek(dev, 64, SEEK_CUR);
     unsigned short signature = 0x90b0;
     write(dev, &signature, 2);
-    lseek(dev, -66, SEEK_CUR);
+    std::ostringstream oss;
+    oss << "mt -f " << dev_name << " rewind";
+    system(oss.str().c_str());
 }

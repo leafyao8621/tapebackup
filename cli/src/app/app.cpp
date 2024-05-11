@@ -7,6 +7,7 @@
 
 TBCLI::App::App(char *dev_name) {
     puts("TBCLI");
+    this->dev_name = dev_name;
     this->dev = open(dev_name, O_RDWR);
     if (!this->dev) {
         throw Err::DEVICE_OPEN;

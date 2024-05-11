@@ -29,6 +29,7 @@ namespace TBCLI {
         };
     private:
         int dev;
+        char *dev_name;
         Signature signature;
     public:
         App(char *dev_name);
