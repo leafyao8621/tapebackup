@@ -8,13 +8,6 @@ void TBCLI::Util::write_archive(char *dev_name) {
     std::ostringstream oss;
     oss << "mt -f " << dev_name << " rewind";
     system(oss.str().c_str());
-    char res = 'n';
-    std::cout << "Rewinded? [y/n]: ";
-    std::cout.flush();
-    for (std::cin >> res; res != 'y'; std::cin >> res) {
-        std::cout << "Rewinded? [y/n]: ";
-        std::cout.flush();
-    }
     std::ostringstream oss_dd_skip;
     oss_dd_skip <<
         "dd if=" <<
@@ -34,13 +27,6 @@ void TBCLI::Util::read_archive(char *dev_name) {
     std::ostringstream oss;
     oss << "mt -f " << dev_name << " rewind";
     system(oss.str().c_str());
-    char res = 'n';
-    std::cout << "Rewinded? [y/n]: ";
-    std::cout.flush();
-    for (std::cin >> res; res != 'y'; std::cin >> res) {
-        std::cout << "Rewinded? [y/n]: ";
-        std::cout.flush();
-    }
     std::ostringstream oss_dd_skip;
     oss_dd_skip <<
         "dd if=" <<
