@@ -17,7 +17,7 @@ void TBCLI::App::main_loop() const {
 
 void TBCLI::App::read_dev() const {
     char buf[64];
-    TBCLI::Util::check_dev(this->dev, buf);
+    TBCLI::Util::check_dev(this->dev, buf, this->dev_name);
     bool initialized = this->signature.check(buf);
     if (!initialized) {
         throw DEVICE_NOT_INTIALIZED;
@@ -27,7 +27,7 @@ void TBCLI::App::read_dev() const {
 
 void TBCLI::App::write_dev() const {
     char buf[64];
-    TBCLI::Util::check_dev(this->dev, buf);
+    TBCLI::Util::check_dev(this->dev, buf, this->dev_name);
     bool initialized = this->signature.check(buf);
     int res = 0;
     if (!initialized) {
@@ -35,10 +35,11 @@ void TBCLI::App::write_dev() const {
         printf("%s: ", "Write protect? [y/n]");
         fflush(stdout);
         for (res = getchar(); res != 'y' && res != 'n'; res = getchar());
-        TBCLI::Util::init_dev(dev, buf, res == 'y');
+        TBCLI::Util::init_dev(dev, buf, res == 'y', this->dev_name);
         this->signature.commit(buf);
     }
-    bool write_protect = TBCLI::Util::check_dev_write_protection(this->dev);
+    bool write_protect =
+        TBCLI::Util::check_dev_write_protection(this->dev, this->dev_name);
     if (initialized && write_protect) {
         throw DEVICE_WRITE_PROTECTED;
     }
