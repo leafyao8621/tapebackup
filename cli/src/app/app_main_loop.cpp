@@ -22,7 +22,7 @@ void TBCLI::App::read_dev() const {
     if (!initialized) {
         throw DEVICE_NOT_INTIALIZED;
     }
-    // TBCLI::Util::read_archive(this->dev);
+    TBCLI::Util::read_archive(this->dev_name);
 }
 
 void TBCLI::App::write_dev() const {
@@ -66,5 +66,5 @@ void TBCLI::App::write_dev() const {
     std::string dir;
     std::cin >> dir;
     TBCLI::Util::compress_dir((char*)dir.c_str());
-    // TBCLI::Util::write_archive(this->dev);
+    TBCLI::Util::write_archive(this->dev_name);
 }
