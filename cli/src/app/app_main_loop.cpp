@@ -48,7 +48,7 @@ void TBCLI::App::write_dev() const {
         fflush(stdout);
         for (res = getchar(); res != 'y' && res != 'n'; res = getchar());
         if (res == 'y') {
-            TBCLI::Util::set_dev_write_protection(this->dev);
+            TBCLI::Util::set_dev_write_protection(this->dev, this->dev_name);
         }
     }
     for (;;) {
