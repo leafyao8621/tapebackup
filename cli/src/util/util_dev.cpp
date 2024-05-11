@@ -13,7 +13,7 @@ void TBCLI::Util::check_dev(char *dev_name, char *signature) {
     char res = 'n';
     std::cout << "Rewinded? [y/n]: ";
     std::cout.flush();
-    for (std::cin >> res; res == 'y'; std::cin >> res) {
+    for (std::cin >> res; res != 'y'; std::cin >> res) {
         std::cout << "Rewinded? [y/n]: ";
         std::cout.flush();
     }
@@ -26,7 +26,7 @@ void TBCLI::Util::check_dev(char *dev_name, char *signature) {
     system(oss.str().c_str());
     std::cout << "Rewinded? [y/n]: ";
     std::cout.flush();
-    for (std::cin >> res; res == 'y'; std::cin >> res) {
+    for (std::cin >> res; res != 'y'; std::cin >> res) {
         std::cout << "Rewinded? [y/n]: ";
         std::cout.flush();
     }
@@ -41,7 +41,7 @@ bool TBCLI::Util::check_dev_write_protection(char *dev_name) {
     char res = 'n';
     std::cout << "Rewinded? [y/n]: ";
     std::cout.flush();
-    for (std::cin >> res; res == 'y'; std::cin >> res) {
+    for (std::cin >> res; res != 'y'; std::cin >> res) {
         std::cout << "Rewinded? [y/n]: ";
         std::cout.flush();
     }
@@ -54,7 +54,7 @@ bool TBCLI::Util::check_dev_write_protection(char *dev_name) {
     system(oss.str().c_str());
     std::cout << "Rewinded? [y/n]: ";
     std::cout.flush();
-    for (std::cin >> res; res == 'y'; std::cin >> res) {
+    for (std::cin >> res; res != 'y'; std::cin >> res) {
         std::cout << "Rewinded? [y/n]: ";
         std::cout.flush();
     }
@@ -69,7 +69,7 @@ void TBCLI::Util::init_dev(
     char res = 'n';
     std::cout << "Rewinded? [y/n]: ";
     std::cout.flush();
-    for (std::cin >> res; res == 'y'; std::cin >> res) {
+    for (std::cin >> res; res != 'y'; std::cin >> res) {
         std::cout << "Rewinded? [y/n]: ";
         std::cout.flush();
     }
@@ -91,7 +91,7 @@ void TBCLI::Util::init_dev(
     system(oss.str().c_str());
     std::cout << "Rewinded? [y/n]: ";
     std::cout.flush();
-    for (std::cin >> res; res == 'y'; std::cin >> res) {
+    for (std::cin >> res; res != 'y'; std::cin >> res) {
         std::cout << "Rewinded? [y/n]: ";
         std::cout.flush();
     }
@@ -104,7 +104,7 @@ void TBCLI::Util::set_dev_write_protection(char *dev_name) {
     char res = 'n';
     std::cout << "Rewinded? [y/n]: ";
     std::cout.flush();
-    for (std::cin >> res; res == 'y'; std::cin >> res) {
+    for (std::cin >> res; res != 'y'; std::cin >> res) {
         std::cout << "Rewinded? [y/n]: ";
         std::cout.flush();
     }
@@ -119,7 +119,7 @@ void TBCLI::Util::set_dev_write_protection(char *dev_name) {
     system(oss.str().c_str());
     std::cout << "Rewinded? [y/n]: ";
     std::cout.flush();
-    for (std::cin >> res; res == 'y'; std::cin >> res) {
+    for (std::cin >> res; res != 'y'; std::cin >> res) {
         std::cout << "Rewinded? [y/n]: ";
         std::cout.flush();
     }
