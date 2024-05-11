@@ -30,7 +30,6 @@ void TBCLI::Util::check_dev(char *dev_name, char *signature) {
         std::cout << "Rewinded? [y/n]: ";
         std::cout.flush();
     }
-    getchar();
 }
 
 bool TBCLI::Util::check_dev_write_protection(char *dev_name) {
