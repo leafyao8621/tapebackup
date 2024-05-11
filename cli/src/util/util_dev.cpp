@@ -10,9 +10,13 @@ void TBCLI::Util::check_dev(char *dev_name, char *signature) {
     std::ostringstream oss;
     oss << "mt -f " << dev_name << " rewind";
     system(oss.str().c_str());
-    std::cout << "Rewinded?: ";
+    char res = 'n';
+    std::cout << "Rewinded? [y/n]: ";
     std::cout.flush();
-    getchar();
+    for (std::cin >> res; res == 'y'; std::cin >> res) {
+        std::cout << "Rewinded? [y/n]: ";
+        std::cout.flush();
+    }
     int dev = open(dev_name, O_RDONLY);
     if (dev == -1) {
         throw DEVICE_OPEN;
@@ -20,8 +24,12 @@ void TBCLI::Util::check_dev(char *dev_name, char *signature) {
     read(dev, signature, 64);
     close(dev);
     system(oss.str().c_str());
-    std::cout << "Rewinded?: ";
+    std::cout << "Rewinded? [y/n]: ";
     std::cout.flush();
+    for (std::cin >> res; res == 'y'; std::cin >> res) {
+        std::cout << "Rewinded? [y/n]: ";
+        std::cout.flush();
+    }
     getchar();
 }
 
@@ -30,9 +38,13 @@ bool TBCLI::Util::check_dev_write_protection(char *dev_name) {
     std::ostringstream oss;
     oss << "mt -f " << dev_name << " rewind";
     system(oss.str().c_str());
-    std::cout << "Rewinded?: ";
+    char res = 'n';
+    std::cout << "Rewinded? [y/n]: ";
     std::cout.flush();
-    getchar();
+    for (std::cin >> res; res == 'y'; std::cin >> res) {
+        std::cout << "Rewinded? [y/n]: ";
+        std::cout.flush();
+    }
     int dev = open(dev_name, O_RDONLY);
     if (dev == -1) {
         throw DEVICE_OPEN;
@@ -40,9 +52,12 @@ bool TBCLI::Util::check_dev_write_protection(char *dev_name) {
     read(dev, &signature, 2);
     close(dev);
     system(oss.str().c_str());
-    std::cout << "Rewinded?: ";
+    std::cout << "Rewinded? [y/n]: ";
     std::cout.flush();
-    getchar();
+    for (std::cin >> res; res == 'y'; std::cin >> res) {
+        std::cout << "Rewinded? [y/n]: ";
+        std::cout.flush();
+    }
     return signature == 0x90b0;
 }
 
@@ -51,9 +66,13 @@ void TBCLI::Util::init_dev(
     std::ostringstream oss;
     oss << "mt -f " << dev_name << " rewind";
     system(oss.str().c_str());
-    std::cout << "Rewinded?: ";
+    char res = 'n';
+    std::cout << "Rewinded? [y/n]: ";
     std::cout.flush();
-    getchar();
+    for (std::cin >> res; res == 'y'; std::cin >> res) {
+        std::cout << "Rewinded? [y/n]: ";
+        std::cout.flush();
+    }
     int dev = open(dev_name, O_RDONLY);
     if (dev == -1) {
         throw DEVICE_OPEN;
@@ -70,18 +89,25 @@ void TBCLI::Util::init_dev(
         throw DEVICE_WRITE;
     }
     system(oss.str().c_str());
-    std::cout << "Rewinded?: ";
+    std::cout << "Rewinded? [y/n]: ";
     std::cout.flush();
-    getchar();
+    for (std::cin >> res; res == 'y'; std::cin >> res) {
+        std::cout << "Rewinded? [y/n]: ";
+        std::cout.flush();
+    }
 }
 
 void TBCLI::Util::set_dev_write_protection(char *dev_name) {
     std::ostringstream oss;
     oss << "mt -f " << dev_name << " rewind";
     system(oss.str().c_str());
-    std::cout << "Rewinded?: ";
+    char res = 'n';
+    std::cout << "Rewinded? [y/n]: ";
     std::cout.flush();
-    getchar();
+    for (std::cin >> res; res == 'y'; std::cin >> res) {
+        std::cout << "Rewinded? [y/n]: ";
+        std::cout.flush();
+    }
     unsigned short signature = 0x90b0;
     int dev = open(dev_name, O_RDONLY);
     if (dev == -1) {
@@ -91,7 +117,10 @@ void TBCLI::Util::set_dev_write_protection(char *dev_name) {
     write(dev, &signature, 2);
     close(dev);
     system(oss.str().c_str());
-    std::cout << "Rewinded?: ";
+    std::cout << "Rewinded? [y/n]: ";
     std::cout.flush();
-    getchar();
+    for (std::cin >> res; res == 'y'; std::cin >> res) {
+        std::cout << "Rewinded? [y/n]: ";
+        std::cout.flush();
+    }
 }
