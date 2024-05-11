@@ -1,3 +1,4 @@
+#include <iostream>
 #include <cstring>
 #include <fcntl.h>
 #include <unistd.h>
@@ -6,18 +7,18 @@
 #include "../util/util.h"
 
 TBCLI::App::App(char *dev_name) {
-    puts("TBCLI");
+    std::cout << "TBCLI" << std::endl;
     this->dev_name = dev_name;
-    puts("Checking environment");
+    std::cout << "Checking environment" << std::endl;
     TBCLI::Util::Env env;
     bool pass = env.check();
     if (pass) {
-        puts("Pass");
+        std::cout << "Pass" << std::endl;
     } else {
-        puts("Initializing environment");
+        std::cout << "Initializing environment" << std::endl;
         env.init();
-        puts("Environment initialized");
+        std::cout << "Environment initialized" << std::endl;
     }
-    puts("Initializing signature");
+    std::cout << "Initializing signature" << std::endl;
     this->signature.init();
 }
