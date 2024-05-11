@@ -77,7 +77,6 @@ void TBCLI::Util::init_dev(
         throw DEVICE_OPEN;
     }
     ssize_t bytes_written = write(dev, signature, 64);
-    std::cout << bytes_written << std::endl;
     if (bytes_written != 64) {
         close(dev);
         throw DEVICE_WRITE;
