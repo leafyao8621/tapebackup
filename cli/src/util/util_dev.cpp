@@ -34,6 +34,7 @@ void TBCLI::Util::check_dev(char *dev_name, char *signature) {
 
 bool TBCLI::Util::check_dev_write_protection(char *dev_name) {
     unsigned short signature = 0;
+    char buf[64];
     std::ostringstream oss;
     oss << "mt -f " << dev_name << " rewind";
     system(oss.str().c_str());
@@ -48,6 +49,7 @@ bool TBCLI::Util::check_dev_write_protection(char *dev_name) {
     if (dev == -1) {
         throw DEVICE_OPEN;
     }
+    read(dev, &buf, 64);
     read(dev, &signature, 2);
     close(dev);
     system(oss.str().c_str());
@@ -97,6 +99,7 @@ void TBCLI::Util::init_dev(
 }
 
 void TBCLI::Util::set_dev_write_protection(char *dev_name) {
+    char buf[64];
     std::ostringstream oss;
     oss << "mt -f " << dev_name << " rewind";
     system(oss.str().c_str());
@@ -108,11 +111,12 @@ void TBCLI::Util::set_dev_write_protection(char *dev_name) {
         std::cout.flush();
     }
     unsigned short signature = 0x90b0;
-    int dev = open(dev_name, O_WRONLY);
+    int dev = open(dev_name, O_RDWR);
     if (dev == -1) {
         close(dev);
         throw DEVICE_OPEN;
     }
+    read(dev, &buf, 64);
     write(dev, &signature, 2);
     close(dev);
     system(oss.str().c_str());
