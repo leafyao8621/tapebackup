@@ -37,7 +37,7 @@ bool TBCLI::Util::check_dev_write_protection(char *dev_name) {
     char all_zero[64] = {0};
     memset(all_one, 0xff, 64);
     for (size_t i = 0; i < 64; ++i) {
-        printf("%lx\n", buf[i]);
+        printf("%hhx\n", buf[i]);
     }
     if (!memcmp(all_one, buf, 64)) {
         return true;
