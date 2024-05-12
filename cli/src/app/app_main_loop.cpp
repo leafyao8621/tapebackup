@@ -66,5 +66,5 @@ void TBCLI::App::write_dev() const {
     std::string dir;
     std::cin >> dir;
     TBCLI::Util::compress_dir((char*)dir.c_str());
-    // TBCLI::Util::write_archive(this->dev_name);
+    TBCLI::Util::write_archive(this->dev_name);
 }
