@@ -20,7 +20,7 @@ void TBCLI::Util::write_archive(char *dev_name) {
         getenv("HOME") << "/backup/backup.tar" <<
         " of=" <<
         dev_name <<
-        " status=progress";
+        " bs=10K status=progress";
     system(oss_dd.str().c_str());
 }
 
@@ -40,6 +40,6 @@ void TBCLI::Util::read_archive(char *dev_name) {
         dev_name <<
         " of=" <<
         getenv("HOME") << "/backup/restore.tar" <<
-        " status=progress";
+        " bs=10K status=progress";
     system(oss_dd.str().c_str());
 }
