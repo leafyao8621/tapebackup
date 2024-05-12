@@ -12,7 +12,7 @@ void TBCLI::Util::write_archive(char *dev_name) {
     oss_dd_skip <<
         "dd of=" <<
         getenv("HOME") << "/backup/backup.tar.gz" <<
-        " of=/dev/null status=progress";
+        " of=/tmp/.sink status=progress";
     system(oss_dd_skip.str().c_str());
     system(oss_dd_skip.str().c_str());
     std::ostringstream oss_dd;
@@ -33,7 +33,7 @@ void TBCLI::Util::read_archive(char *dev_name) {
     oss_dd_skip <<
         "dd of=" <<
         getenv("HOME") << "/backup/backup.tar.gz" <<
-        " of=/dev/null status=progress";
+        " of=/tmp/.sink status=progress";
     system(oss_dd_skip.str().c_str());
     system(oss_dd_skip.str().c_str());
     std::ostringstream oss_dd;
