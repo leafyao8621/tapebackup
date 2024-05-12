@@ -30,6 +30,9 @@ bool TBCLI::Util::check_dev_write_protection(char *dev_name) {
         throw DEVICE_OPEN;
     }
     read(dev, &buf, 64);
+    for (size_t i = 0; i < 64; ++i) {
+        printf("%hhx\n", buf[i]);
+    }
     read(dev, &buf, 64);
     close(dev);
     system(oss.str().c_str());
