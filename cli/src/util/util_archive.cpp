@@ -8,12 +8,13 @@ void TBCLI::Util::write_archive(char *dev_name) {
     std::ostringstream oss;
     oss << "mt -f " << dev_name << " rewind";
     system(oss.str().c_str());
-    std::ostringstream oss_dd_skip;
-    oss_dd_skip <<
-        "dd if=" <<
-        dev_name <<
-        " of=/dev/null bs=128 count=1";
-    system(oss_dd_skip.str().c_str());
+    char buf[128];
+    int dev = open(dev_name, O_RDONLY);
+    if (dev == -1) {
+        throw DEVICE_OPEN;
+    }
+    read(dev, &buf, 128);
+    close(dev);
     std::ostringstream oss_dd;
     oss_dd <<
         "dd if=" <<
@@ -27,12 +28,13 @@ void TBCLI::Util::read_archive(char *dev_name) {
     std::ostringstream oss;
     oss << "mt -f " << dev_name << " rewind";
     system(oss.str().c_str());
-    std::ostringstream oss_dd_skip;
-    oss_dd_skip <<
-        "dd if=" <<
-        dev_name <<
-        " of=/dev/null bs=128 count=1";
-    system(oss_dd_skip.str().c_str());
+    char buf[128];
+    int dev = open(dev_name, O_RDONLY);
+    if (dev == -1) {
+        throw DEVICE_OPEN;
+    }
+    read(dev, &buf, 128);
+    close(dev);
     std::ostringstream oss_dd;
     oss_dd <<
         "dd if=" <<

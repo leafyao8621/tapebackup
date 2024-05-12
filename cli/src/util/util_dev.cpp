@@ -1,5 +1,6 @@
 #include <iostream>
 #include <sstream>
+#include <cstring>
 #include <fcntl.h>
 
 #include <unistd.h>
@@ -20,7 +21,6 @@ void TBCLI::Util::check_dev(char *dev_name, char *signature) {
 }
 
 bool TBCLI::Util::check_dev_write_protection(char *dev_name) {
-    unsigned short signature = 0;
     char buf[64];
     std::ostringstream oss;
     oss << "mt -f " << dev_name << " rewind";
@@ -30,10 +30,19 @@ bool TBCLI::Util::check_dev_write_protection(char *dev_name) {
         throw DEVICE_OPEN;
     }
     read(dev, &buf, 64);
-    read(dev, &signature, 2);
+    read(dev, &buf, 64);
     close(dev);
     system(oss.str().c_str());
-    return signature == 0x90b0;
+    char all_one[64];
+    char all_zero[64] = {0};
+    memset(all_one, 0xff, 64);
+    if (!memcmp(all_one, buf, 64)) {
+        return true;
+    }
+    if (!memcmp(all_zero, buf, 64)) {
+        return false;
+    }
+    throw TBCLI::Util::Err::READONLY_FLAG;
 }
 
 void TBCLI::Util::init_dev(
@@ -50,10 +59,11 @@ void TBCLI::Util::init_dev(
         close(dev);
         throw DEVICE_WRITE;
     }
-    unsigned short write_protection_value = write_protection ? 0x90b0 : 0xb090;
-    bytes_written = write(dev, &write_protection_value, 2);
+    char write_protection_value[64];
+    memset(write_protection_value, write_protection ? 0xff : 0, 64);
+    bytes_written = write(dev, &write_protection_value, 64);
     close(dev);
-    if (bytes_written != 2) {
+    if (bytes_written != 64) {
         throw DEVICE_WRITE;
     }
     system(oss.str().c_str());
@@ -64,14 +74,14 @@ void TBCLI::Util::set_dev_write_protection(char *dev_name) {
     std::ostringstream oss;
     oss << "mt -f " << dev_name << " rewind";
     system(oss.str().c_str());
-    unsigned short signature = 0x90b0;
     int dev = open(dev_name, O_RDWR);
     if (dev == -1) {
         close(dev);
         throw DEVICE_OPEN;
     }
-    read(dev, &buf, 64);
-    write(dev, &signature, 2);
+    read(dev, buf, 64);
+    memset(buf, 0xff, 64);
+    write(dev, buf, 64);
     close(dev);
     system(oss.str().c_str());
 }

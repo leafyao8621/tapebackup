@@ -41,6 +41,9 @@ int main(int argc, char **argv) {
         case TBCLI::Util::Err::ARCHIVE_READ:
             puts("Archive read failed");
             break;
+        case TBCLI::Util::Err::READONLY_FLAG:
+            puts("Read only flag invalid");
+            break;
         }
     } catch (TBCLI::App::Signature::Err err) {
         switch (err) {

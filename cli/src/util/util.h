@@ -11,7 +11,8 @@ namespace TBCLI {
             DIRECTORY_LISTING,
             DIRECTORY_COMPRESSION,
             ARCHIVE_WRITE,
-            ARCHIVE_READ
+            ARCHIVE_READ,
+            READONLY_FLAG
         };
         class Env {
             std::string backup, signature;
