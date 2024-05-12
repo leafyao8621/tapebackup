@@ -10,9 +10,9 @@ void TBCLI::Util::write_archive(char *dev_name) {
     system(oss.str().c_str());
     std::ostringstream oss_dd_skip;
     oss_dd_skip <<
-        "dd if=" <<
+        "mt -f " <<
         dev_name <<
-        " of=/tmp/.sink status=progress";
+        " fsf 1";
     system(oss_dd_skip.str().c_str());
     std::ostringstream oss_dd;
     oss_dd <<
@@ -30,9 +30,9 @@ void TBCLI::Util::read_archive(char *dev_name) {
     system(oss.str().c_str());
     std::ostringstream oss_dd_skip;
     oss_dd_skip <<
-        "dd if=" <<
+        "mt -f " <<
         dev_name <<
-        " of=/tmp/.sink status=progress";
+        " fsf 1";
     system(oss_dd_skip.str().c_str());
     std::ostringstream oss_dd;
     oss_dd <<
