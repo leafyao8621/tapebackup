@@ -37,8 +37,8 @@ void TBCLI::Util::compress_dir(char *dir) {
     }
     std::ostringstream oss_command;
     oss_command <<
-        "tar cvzf " <<
-        getenv("HOME") << "/backup/backup.tar.gz -C " <<
+        "tar cvf " <<
+        getenv("HOME") << "/backup/backup.tar -C " <<
         oss_dir.str() << " .";
     int ret = system(oss_command.str().c_str());
     if (ret) {

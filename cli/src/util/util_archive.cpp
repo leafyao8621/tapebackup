@@ -17,7 +17,7 @@ void TBCLI::Util::write_archive(char *dev_name) {
     std::ostringstream oss_dd;
     oss_dd <<
         "dd if=" <<
-        getenv("HOME") << "/backup/backup.tar.gz" <<
+        getenv("HOME") << "/backup/backup.tar" <<
         " of=" <<
         dev_name <<
         " status=progress";
@@ -39,7 +39,7 @@ void TBCLI::Util::read_archive(char *dev_name) {
         "dd if=" <<
         dev_name <<
         " of=" <<
-        getenv("HOME") << "/backup/restore.tar.gz" <<
+        getenv("HOME") << "/backup/restore.tar" <<
         " status=progress";
     system(oss_dd.str().c_str());
 }
