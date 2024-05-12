@@ -64,7 +64,7 @@ void TBCLI::Util::init_dev(
     }
     char write_protection_value[64];
     memset(write_protection_value, write_protection ? 0xff : 0, 64);
-    bytes_written = write(dev, &write_protection_value, 64);
+    bytes_written = write(dev, write_protection_value, 64);
     close(dev);
     if (bytes_written != 64) {
         throw DEVICE_WRITE;
