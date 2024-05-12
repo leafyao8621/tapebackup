@@ -9,7 +9,7 @@ void TBCLI::Util::write_archive(char *dev_name) {
     oss << "mt -f " << dev_name << " rewind";
     system(oss.str().c_str());
     char buf[128];
-    int dev = open(dev_name, O_RDWR);
+    int dev = open(dev_name, O_RDONLY);
     if (dev == -1) {
         throw DEVICE_OPEN;
     }
