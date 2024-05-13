@@ -3,6 +3,8 @@
 
 #include <string>
 
+#include <openssl/evp.h>
+
 namespace TBCLI {
     namespace Util {
         enum Err {
@@ -25,6 +27,14 @@ namespace TBCLI {
             Env();
             bool check();
             void init() const;
+        };
+        class HMAC {
+            EVP_MAC *evp_mac;
+            EVP_MAC_CTX *evp_mac_ctx;
+        public:
+            HMAC();
+            ~HMAC();
+            void calculate(char *file_name, char *md);
         };
         void check_dev(char *dev_name, char *signature);
         bool check_dev_write_protection(char *dev_name);
