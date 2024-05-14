@@ -21,6 +21,7 @@ namespace TBCLI {
         Connector connector;
         TBCLI::Util::Gen gen;
         TBCLI::Util::Env env;
+        TBCLI::Util::HMAC hmac;
     public:
         App(char *dev_name);
         void main_loop() const;

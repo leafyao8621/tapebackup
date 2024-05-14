@@ -78,6 +78,22 @@ TBCLI::Connector::Connector() {
             &this->stmt_set_write_protection,
             NULL
         );
+    ret =
+        sqlite3_prepare_v2(
+            this->conn,
+            "UPDATE MAIN "
+            "SET "
+            "FILE_NAME = ? "
+            "WHERE "
+            "SIGNATURE = ?",
+            -1,
+            &this->stmt_update_file_name,
+            NULL
+        );
+    if (ret) {
+        this->print_err();
+        throw Err::STMT_CREATION;
+    }
     if (ret) {
         this->print_err();
         throw Err::STMT_CREATION;
@@ -99,12 +115,11 @@ TBCLI::Connector::Connector() {
             this->conn,
             "UPDATE MAIN "
             "SET "
-            "FILE_NAME = ?, "
             "HMAC_VALUE = ? "
             "WHERE "
             "SIGNATURE = ?",
             -1,
-            &this->stmt_update_file,
+            &this->stmt_update_hmac,
             NULL
         );
     if (ret) {
@@ -119,8 +134,9 @@ TBCLI::Connector::~Connector() {
     sqlite3_finalize(this->stmt_get_write_protection);
     sqlite3_finalize(this->stmt_add);
     sqlite3_finalize(this->stmt_set_write_protection);
+    sqlite3_finalize(this->stmt_update_file_name);
     sqlite3_finalize(this->stmt_update_key);
-    sqlite3_finalize(this->stmt_update_file);
+    sqlite3_finalize(this->stmt_update_hmac);
     sqlite3_close(this->conn);
 }
 

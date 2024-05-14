@@ -77,3 +77,64 @@ void TBCLI::Connector::set_write_protection(char *signature) const {
         throw Err::STMT_EXECUTION;
     }
 }
+
+void TBCLI::Connector::update_file_name(
+    char *signature, char *file_name) const {
+    int ret =
+        sqlite3_bind_text(this->stmt_update_file_name, 1, file_name, -1, 0);
+    if (ret) {
+        this->print_err();
+        throw Err::STMT_BIND;
+    }
+    ret =
+        sqlite3_bind_blob(this->stmt_update_file_name, 2, signature, 64, 0);
+    if (ret) {
+        this->print_err();
+        throw Err::STMT_BIND;
+    }
+    ret = sqlite3_step(this->stmt_update_file_name);
+    if (ret != SQLITE_DONE) {
+        this->print_err();
+        throw Err::STMT_EXECUTION;
+    }
+}
+
+void TBCLI::Connector::update_key(char *signature, char *key) const {
+    int ret =
+        sqlite3_bind_blob(this->stmt_update_key, 1, key, 64, 0);
+    if (ret) {
+        this->print_err();
+        throw Err::STMT_BIND;
+    }
+    ret =
+        sqlite3_bind_blob(this->stmt_update_key, 2, signature, 64, 0);
+    if (ret) {
+        this->print_err();
+        throw Err::STMT_BIND;
+    }
+    ret = sqlite3_step(this->stmt_update_key);
+    if (ret != SQLITE_DONE) {
+        this->print_err();
+        throw Err::STMT_EXECUTION;
+    }
+}
+
+void TBCLI::Connector::update_hmac(char *signature, char *hmac) const {
+    int ret =
+        sqlite3_bind_blob(this->stmt_update_hmac, 1, hmac, 64, 0);
+    if (ret) {
+        this->print_err();
+        throw Err::STMT_BIND;
+    }
+    ret =
+        sqlite3_bind_blob(this->stmt_update_hmac, 2, signature, 64, 0);
+    if (ret) {
+        this->print_err();
+        throw Err::STMT_BIND;
+    }
+    ret = sqlite3_step(this->stmt_update_hmac);
+    if (ret != SQLITE_DONE) {
+        this->print_err();
+        throw Err::STMT_EXECUTION;
+    }
+}

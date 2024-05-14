@@ -28,6 +28,8 @@ void TBCLI::Util::get_dir() {
 void TBCLI::Util::compress_dir(char *dir) {
     std::ostringstream oss_dir;
     oss_dir << getenv("HOME") << "/backup/" << dir;
+    std::ostringstream oss_archive;
+    oss_archive << getenv("HOME") << "/backup/archive/" << dir << ".tar";
     struct stat st;
     if (stat(oss_dir.str().c_str(), &st)) {
         throw Err::DIRECTORY_COMPRESSION;
@@ -37,8 +39,7 @@ void TBCLI::Util::compress_dir(char *dir) {
     }
     std::ostringstream oss_command;
     oss_command <<
-        "tar cvf " <<
-        getenv("HOME") << "/backup/backup.tar -C " <<
+        "tar cvf " << oss_archive.str().c_str() << " -C " <<
         oss_dir.str() << " .";
     int ret = system(oss_command.str().c_str());
     if (ret) {
