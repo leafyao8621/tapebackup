@@ -17,16 +17,26 @@ namespace TBCLI {
             READONLY_FLAG
         };
         class Env {
-            std::string backup, signature;
-            bool backup_found, signature_found;
+            std::string backup, backup_archive;
+            bool backup_found, backup_archive_found;
         public:
             enum Err {
-                DIRECTORY_CREATION,
-                FILE_CREATION
+                DIRECTORY_CREATION
             };
             Env();
             bool check();
             void init() const;
+        };
+        class Gen {
+            int fd;
+        public:
+            enum Err {
+                OPEN,
+                READ
+            };
+            Gen();
+            ~Gen();
+            void operator()(char *buf) const;
         };
         class HMAC {
             EVP_MAC *evp_mac;
@@ -34,7 +44,7 @@ namespace TBCLI {
         public:
             HMAC();
             ~HMAC();
-            void calculate(char *file_name, char *md);
+            void operator()(char *file_name, char *md);
         };
         void check_dev(char *dev_name, char *signature);
         bool check_dev_write_protection(char *dev_name);
@@ -43,8 +53,8 @@ namespace TBCLI {
         void set_dev_write_protection(char *dev_name);
         void get_dir();
         void compress_dir(char *dir);
-        void write_archive(char *dev_name);
-        void read_archive(char *dev_name);
+        void write_archive(char *dev_name, char *file_name);
+        void read_archive(char *dev_name, char *file_name);
     }
 }
 

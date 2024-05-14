@@ -1,9 +1,11 @@
+#include <iostream>
+
 #include "app/app.h"
 #include "util/util.h"
 
 int main(int argc, char **argv) {
     if (argc != 2) {
-        puts("Usage: tbcli <device name>");
+        std::cout << "Usage: tbcli <device name>" << std::endl;
         return 0;
     }
     try {
@@ -12,55 +14,77 @@ int main(int argc, char **argv) {
     } catch (TBCLI::App::Err err) {
         switch (err) {
         case TBCLI::App::Err::DEVICE_OPEN:
-            printf("Cannot open device %s\n", argv[1]);
+            std::cout << "Cannot open device " << argv[1] << std::endl;
             break;
         case TBCLI::App::Err::DEVICE_NOT_INTIALIZED:
-            printf("Device %s not initialized\n", argv[1]);
+            std::cout << "Device " << argv[1] <<
+                " not initialized" << std::endl;
             break;
         case TBCLI::App::Err::DEVICE_WRITE_PROTECTED:
-            printf("Device %s write proctected\n", argv[1]);
+            std::cout << "Device " << argv[1] <<
+                " write proctected" << std::endl;
+            break;
+        case TBCLI::App::Err::DEVICE_WRITE_PROTECTION_TAMPERED:
+            std::cout << "Device " << argv[1] <<
+                " write proctection tampered" << std::endl;
+            break;
+        case TBCLI::App::Err::DEVICE_FILE_TAMPERED:
+            std::cout << "Device " << argv[1] <<
+                " file tampered" << std::endl;
             break;
         }
     } catch (TBCLI::Util::Err err) {
         switch (err) {
         case TBCLI::Util::DEVICE_OPEN:
-            printf("Failed to open device %s\n", argv[1]);
+            std::cout << "Failed to open device " << argv[1] << std::endl;
             break;
         case TBCLI::Util::DEVICE_WRITE:
-            printf("Failed to write to device %s\n", argv[1]);
+            std::cout << "Failed to write to device " << argv[1] << std::endl;
             break;
         case TBCLI::Util::Err::DIRECTORY_LISTING:
-            puts("~/backup not accessible");
+            std::cout << "~/backup not accessible" << std::endl;
             break;
         case TBCLI::Util::Err::DIRECTORY_COMPRESSION:
-            puts("Compression failed");
+            std::cout << "Compression failed" << std::endl;
             break;
         case TBCLI::Util::Err::ARCHIVE_WRITE:
-            puts("Archive write failed");
+            std::cout << "Archive write failed" << std::endl;
             break;
         case TBCLI::Util::Err::ARCHIVE_READ:
-            puts("Archive read failed");
+            std::cout << "Archive read failed" << std::endl;
             break;
         case TBCLI::Util::Err::READONLY_FLAG:
-            puts("Read only flag invalid");
-            break;
-        }
-    } catch (TBCLI::App::Signature::Err err) {
-        switch (err) {
-        case TBCLI::App::Signature::Err::GENERATOR_FAIL:
-            puts("Reading from random source failed");
-            break;
-        case TBCLI::App::Signature::Err::WRITE_FAIL:
-            puts("Writing to ~/.signature failed");
+            std::cout << "Read only flag invalid" << std::endl;
             break;
         }
     } catch (TBCLI::Util::Env::Err err) {
         switch (err) {
         case TBCLI::Util::Env::Err::DIRECTORY_CREATION:
-            puts("~/backup creation failed");
+            std::cout << "~/backup creation failed" << std::endl;
             break;
-        case TBCLI::Util::Env::Err::FILE_CREATION:
-            puts("~/.signature creation failed");
+        }
+    } catch (TBCLI::Util::Gen::Err err) {
+        switch (err) {
+        case TBCLI::Util::Gen::Err::OPEN:
+            std::cout << "Failed to open /dev/urandom" << std::endl;
+            break;
+        case TBCLI::Util::Gen::Err::READ:
+            std::cout << "Failed to read from /dev/urandom" << std::endl;
+            break;
+        }
+    } catch (TBCLI::Connector::Err err) {
+        switch (err) {
+        case TBCLI::Connector::Err::CONNECTION:
+            std::cout << "Failed to connect to ~/.tb.db" << std::endl;
+            break;
+        case TBCLI::Connector::Err::STMT_CREATION:
+            std::cout << "Failed to create statement" << std::endl;
+            break;
+        case TBCLI::Connector::Err::STMT_EXECUTION:
+            std::cout << "Failed to execute statement" << std::endl;
+            break;
+        case TBCLI::Connector::Err::STMT_BIND:
+            std::cout << "Failed to bind statement" << std::endl;
             break;
         }
     }

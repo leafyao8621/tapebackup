@@ -18,28 +18,40 @@ void TBCLI::App::main_loop() const {
 void TBCLI::App::read_dev() const {
     char buf[64];
     TBCLI::Util::check_dev(this->dev_name, buf);
-    bool initialized = this->signature.check(buf);
+    bool initialized = this->connector.check(buf);
     if (!initialized) {
         throw DEVICE_NOT_INTIALIZED;
     }
-    TBCLI::Util::read_archive(this->dev_name);
+    bool write_protect =
+        TBCLI::Util::check_dev_write_protection(this->dev_name);
+    bool write_protect_db =
+        this->connector.get_write_protection(buf);
+    if (write_protect != write_protect_db) {
+        throw DEVICE_WRITE_PROTECTION_TAMPERED;
+    }
+    // TBCLI::Util::read_archive(this->dev_name);
 }
 
 void TBCLI::App::write_dev() const {
     char buf[64];
     TBCLI::Util::check_dev(this->dev_name, buf);
-    bool initialized = this->signature.check(buf);
+    bool initialized = this->connector.check(buf);
     char res = 0;
     if (!initialized) {
-        this->signature.generate(buf);
+        this->gen(buf);
         std::cout << "Write protect? [y/n]: " ;
         std::cout.flush();
         for (std::cin >> res; res != 'y' && res != 'n'; std::cin >> res);
         TBCLI::Util::init_dev(this->dev_name, buf, res == 'y');
-        this->signature.commit(buf);
+        this->connector.add(buf, res == 'y');
     }
     bool write_protect =
         TBCLI::Util::check_dev_write_protection(this->dev_name);
+    bool write_protect_db =
+        this->connector.get_write_protection(buf);
+    if (write_protect != write_protect_db) {
+        throw DEVICE_WRITE_PROTECTION_TAMPERED;
+    }
     if (initialized && write_protect) {
         throw DEVICE_WRITE_PROTECTED;
     }
@@ -49,6 +61,7 @@ void TBCLI::App::write_dev() const {
         for (std::cin >> res; res != 'y' && res != 'n'; std::cin >> res);
         if (res == 'y') {
             TBCLI::Util::set_dev_write_protection(this->dev_name);
+            this->connector.set_write_protection(buf);
         }
     }
     for (;;) {
@@ -66,5 +79,5 @@ void TBCLI::App::write_dev() const {
     std::string dir;
     std::cin >> dir;
     TBCLI::Util::compress_dir((char*)dir.c_str());
-    TBCLI::Util::write_archive(this->dev_name);
+    // TBCLI::Util::write_archive(this->dev_name);
 }

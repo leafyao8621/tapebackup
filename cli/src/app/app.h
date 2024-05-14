@@ -3,32 +3,24 @@
 
 #include <vector>
 
+#include "../db/connector.h"
+#include "../util/util.h"
+
 namespace TBCLI {
     class App {
     public:
         enum Err {
             DEVICE_OPEN,
             DEVICE_NOT_INTIALIZED,
-            DEVICE_WRITE_PROTECTED
-        };
-        class Signature {
-            std::vector<std::vector<char> > valid_list;
-            int rnd_src, signature_file;
-        public:
-            enum Err {
-                GENERATOR_FAIL,
-                WRITE_FAIL
-            };
-            Signature();
-            ~Signature();
-            void init();
-            void generate(char *signature) const;
-            void commit(char *signature) const;
-            bool check(char *signature) const;
+            DEVICE_WRITE_PROTECTED,
+            DEVICE_WRITE_PROTECTION_TAMPERED,
+            DEVICE_FILE_TAMPERED
         };
     private:
         char *dev_name;
-        Signature signature;
+        Connector connector;
+        TBCLI::Util::Gen gen;
+        TBCLI::Util::Env env;
     public:
         App(char *dev_name);
         void main_loop() const;

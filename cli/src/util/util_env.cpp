@@ -11,11 +11,13 @@ TBCLI::Util::Env::Env() {
     std::ostringstream oss;
     oss << getenv("HOME") << "/backup";
     this->backup = oss.str();
-    std::ostringstream oss_signature;
-    oss_signature << getenv("HOME") << "/.signature";
-    this->signature = oss_signature.str();
     this->backup_found = false;
-    this->signature_found = false;
+    std::ostringstream oss_archive;
+    oss_archive << getenv("HOME") << "/backup/archive";
+    this->backup = oss.str();
+    this->backup_archive = oss_archive.str();
+    this->backup_found = false;
+    this->backup_archive_found = false;
 }
 
 bool TBCLI::Util::Env::check() {
@@ -25,12 +27,12 @@ bool TBCLI::Util::Env::check() {
             this->backup_found = true;
         }
     }
-    if (!stat(this->signature.c_str(), &st)) {
-        if (!S_ISDIR(st.st_mode)) {
-            this->signature_found = true;
+    if (!stat(this->backup_archive.c_str(), &st)) {
+        if (S_ISDIR(st.st_mode)) {
+            this->backup_archive_found = true;
         }
     }
-    return this->backup_found && this->signature_found;
+    return this->backup_found && this->backup_archive_found;
 }
 
 void TBCLI::Util::Env::init() const {
@@ -39,11 +41,9 @@ void TBCLI::Util::Env::init() const {
             throw Err::DIRECTORY_CREATION;
         }
     }
-    if (!this->signature_found) {
-        int fd = creat(this->signature.c_str(), 0600);
-        if (fd == -1) {
-            throw Err::FILE_CREATION;
+    if (!this->backup_archive_found) {
+        if (mkdir(this->backup_archive.c_str(), 0700)) {
+            throw Err::DIRECTORY_CREATION;
         }
-        close(fd);
     }
 }
