@@ -18,7 +18,7 @@ void TBCLI::Util::write_archive(char *dev_name, char *file_name) {
     oss_dd <<
         "dd if=" <<
         getenv("HOME") << "/backup/archive/" << file_name <<
-        " of=" <<
+        "_rst.tar of=" <<
         dev_name <<
         " bs=10K status=progress";
     system(oss_dd.str().c_str());
@@ -40,6 +40,6 @@ void TBCLI::Util::read_archive(char *dev_name, char *file_name) {
         dev_name <<
         " of=" <<
         getenv("HOME") << "/backup/archive/" << file_name <<
-        " bs=10K status=progress";
+        ".tar bs=10K status=progress";
     system(oss_dd.str().c_str());
 }

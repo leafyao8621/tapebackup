@@ -126,6 +126,42 @@ TBCLI::Connector::Connector() {
         this->print_err();
         throw Err::STMT_CREATION;
     }
+    ret =
+        sqlite3_prepare_v2(
+            this->conn,
+            "SELECT HMAC_KEY FROM MAIN WHERE SIGNATURE = ?",
+            -1,
+            &this->stmt_get_key,
+            NULL
+        );
+    if (ret) {
+        this->print_err();
+        throw Err::STMT_CREATION;
+    }
+    ret =
+        sqlite3_prepare_v2(
+            this->conn,
+            "SELECT HMAC_VALUE FROM MAIN WHERE SIGNATURE = ?",
+            -1,
+            &this->stmt_get_hmac,
+            NULL
+        );
+    if (ret) {
+        this->print_err();
+        throw Err::STMT_CREATION;
+    }
+    ret =
+        sqlite3_prepare_v2(
+            this->conn,
+            "SELECT FILE_NAME FROM MAIN WHERE SIGNATURE = ?",
+            -1,
+            &this->stmt_get_file_name,
+            NULL
+        );
+    if (ret) {
+        this->print_err();
+        throw Err::STMT_CREATION;
+    }
 }
 
 TBCLI::Connector::~Connector() {
@@ -137,6 +173,9 @@ TBCLI::Connector::~Connector() {
     sqlite3_finalize(this->stmt_update_file_name);
     sqlite3_finalize(this->stmt_update_key);
     sqlite3_finalize(this->stmt_update_hmac);
+    sqlite3_finalize(this->stmt_get_key);
+    sqlite3_finalize(this->stmt_get_hmac);
+    sqlite3_finalize(this->stmt_get_file_name);
     sqlite3_close(this->conn);
 }
 

@@ -1,3 +1,5 @@
+#include <cstring>
+
 #include "connector.h"
 
 bool TBCLI::Connector::check(char *signature) const {
@@ -137,4 +139,71 @@ void TBCLI::Connector::update_hmac(char *signature, char *hmac) const {
         this->print_err();
         throw Err::STMT_EXECUTION;
     }
+}
+
+void TBCLI::Connector::get_key(char *signature, char *key) const {
+    int ret =
+        sqlite3_bind_blob(this->stmt_get_key, 1, signature, 64, 0);
+    if (ret) {
+        this->print_err();
+        throw Err::STMT_BIND;
+    }
+    ret = sqlite3_step(this->stmt_get_key);
+    if (ret != SQLITE_ROW) {
+        this->print_err();
+        throw Err::STMT_EXECUTION;
+    }
+    const void *res =
+        sqlite3_column_blob(this->stmt_get_key, 0);
+    memcpy(key, res, 64);
+    ret = sqlite3_step(this->stmt_get_key);
+    if (ret != SQLITE_DONE) {
+        this->print_err();
+        throw Err::STMT_EXECUTION;
+    }
+}
+
+void TBCLI::Connector::get_hmac(char *signature, char *hmac) const {
+    int ret =
+        sqlite3_bind_blob(this->stmt_get_hmac, 1, signature, 64, 0);
+    if (ret) {
+        this->print_err();
+        throw Err::STMT_BIND;
+    }
+    ret = sqlite3_step(this->stmt_get_hmac);
+    if (ret != SQLITE_ROW) {
+        this->print_err();
+        throw Err::STMT_EXECUTION;
+    }
+    const void *res =
+        sqlite3_column_blob(this->stmt_get_hmac, 0);
+    memcpy(hmac, res, 64);
+    ret = sqlite3_step(this->stmt_get_hmac);
+    if (ret != SQLITE_DONE) {
+        this->print_err();
+        throw Err::STMT_EXECUTION;
+    }
+}
+
+std::string TBCLI::Connector::get_file_name(char *signature) const {
+    int ret =
+        sqlite3_bind_blob(this->stmt_get_file_name, 1, signature, 64, 0);
+    if (ret) {
+        this->print_err();
+        throw Err::STMT_BIND;
+    }
+    ret = sqlite3_step(this->stmt_get_file_name);
+    if (ret != SQLITE_ROW) {
+        this->print_err();
+        throw Err::STMT_EXECUTION;
+    }
+    const unsigned char *res =
+        sqlite3_column_text(this->stmt_get_file_name, 0);
+    std::string fn = std::string((char*)res);
+    ret = sqlite3_step(this->stmt_get_file_name);
+    if (ret != SQLITE_DONE) {
+        this->print_err();
+        throw Err::STMT_EXECUTION;
+    }
+    return fn;
 }

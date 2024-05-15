@@ -1,6 +1,7 @@
 #include <iostream>
 #include <fstream>
 #include <sstream>
+#include <cstring>
 #include <unistd.h>
 #include "app.h"
 #include "../util/util.h"
@@ -31,7 +32,15 @@ void TBCLI::App::read_dev() const {
     if (write_protect != write_protect_db) {
         throw DEVICE_WRITE_PROTECTION_TAMPERED;
     }
-    // TBCLI::Util::read_archive(this->dev_name);
+    std::string file_name = this->connector.get_file_name(buf);
+    TBCLI::Util::read_archive(this->dev_name, (char*)file_name.c_str());
+    char key[64], hmac[64], hmac_read[64];
+    this->connector.get_key(buf, key);
+    this->connector.get_hmac(buf, hmac);
+    this->hmac((char*)file_name.c_str(), key, hmac_read);
+    if (memcmp(hmac, hmac_read, 64)) {
+        throw Err::DEVICE_FILE_TAMPERED;
+    }
 }
 
 void TBCLI::App::write_dev() const {
@@ -87,7 +96,6 @@ void TBCLI::App::write_dev() const {
     char hmac[64];
     this->hmac((char*)dir.c_str(), key, hmac);
     this->connector.update_hmac(signature, hmac);
-    // TBCLI::Util::write_archive(this->dev_name);
     std::cout << "Get information file? [y/n]: " ;
     std::cout.flush();
     for (std::cin >> res; res != 'y' && res != 'n'; std::cin >> res);
@@ -108,4 +116,5 @@ void TBCLI::App::write_dev() const {
             "Key: " << key_out << std::endl <<
             "HMAC: " << hmac_out << std::endl;
     }
+    TBCLI::Util::write_archive(this->dev_name, (char*)dir.c_str());
 }
