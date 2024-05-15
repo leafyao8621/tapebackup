@@ -113,11 +113,7 @@ TBCLI::Connector::Connector() {
     ret =
         sqlite3_prepare_v2(
             this->conn,
-            "UPDATE MAIN "
-            "SET "
-            "HMAC_VALUE = ? "
-            "WHERE "
-            "SIGNATURE = ?",
+            "UPDATE MAIN SET HMAC_VALUE = ? WHERE SIGNATURE = ?",
             -1,
             &this->stmt_update_hmac,
             NULL
