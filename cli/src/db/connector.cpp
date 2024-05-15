@@ -14,7 +14,7 @@ TBCLI::Connector::Connector() {
     ret =
         sqlite3_prepare_v2(
             this->conn,
-            "CREATE TABLE IF NOT EXISTS MAIN ( "
+            "CREATE TABLE IF NOT EXISTS MAIN ("
             "SIGNATURE BLOB(64) PRIMARY KEY,"
             "WRITE_PROTECTION INTEGER,"
             "HMAC_KEY BLOB(64),"
