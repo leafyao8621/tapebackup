@@ -97,17 +97,15 @@ void TBCLI::App::write_dev() const {
     this->hmac((char*)dir.c_str(), key, hmac);
     this->connector.update_hmac(signature, hmac);
     std::cout << "Get information file? [y/n]: " ;
-    std::cout.flush();
-    for (std::cin >> res; res != 'y' && res != 'n'; std::cin >> res);
-    if (res == 'y') {
-        char signature_out[129], key_out[129], hmac_out[129];
-        TBCLI::Util::get_hex(signature, signature_out);
-        TBCLI::Util::get_hex(key, key_out);
-        TBCLI::Util::get_hex(hmac, hmac_out);
-        std::cout << "File name: " << dir << std::endl <<
-            "Signature: " << signature_out << std::endl <<
-            "Key: " << key_out << std::endl <<
-            "HMAC: " << hmac_out << std::endl;
+    char signature_out[129], key_out[129], hmac_out[129];
+    TBCLI::Util::get_hex(signature, signature_out);
+    TBCLI::Util::get_hex(key, key_out);
+    TBCLI::Util::get_hex(hmac, hmac_out);
+    std::cout << "File name: " << dir << std::endl <<
+        "Signature: " << signature_out << std::endl <<
+        "Key: " << key_out << std::endl <<
+        "HMAC: " << hmac_out << std::endl;
+    {
         std::ostringstream oss_ofn;
         oss_ofn << dir << ".txt";
         std::ofstream ofs(oss_ofn.str());
