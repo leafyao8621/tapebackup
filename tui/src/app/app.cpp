@@ -3,12 +3,12 @@
 
 #include "app.h"
 
-tbtui::App::Window::HandlerStatus::HandlerStatus(bool exit, bool render) {
+TBTUI::App::Window::HandlerStatus::HandlerStatus(bool exit, bool render) {
     this->exit = exit;
     this->render = render;
 }
 
-tbtui::App::App() {
+TBTUI::App::App() {
     signal(SIGINT, SIG_IGN);
     initscr();
     cbreak();
@@ -17,11 +17,11 @@ tbtui::App::App() {
     this->windows.push_back(std::make_unique<WindowMain>(this));
 }
 
-tbtui::App::~App() {
+TBTUI::App::~App() {
     endwin();
 }
 
-void tbtui::App::run() {
+void TBTUI::App::run() {
     this->windows.back()->render();
     for (;;) {
         Window::HandlerStatus status = this->windows.back()->handle();

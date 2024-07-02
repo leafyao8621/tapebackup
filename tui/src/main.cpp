@@ -1,15 +1,16 @@
 #include <iostream>
 
 #include "app/app.h"
-
+#include "util/util.h"
 
 int main() {
     try {
-        tbtui::App app;
+        std::string path = getenv("HOME");
+        TBTUI::App app;
         app.run();
-    } catch (tbtui::App::Err err) {
+    } catch (TBTUI::App::Err err) {
         switch (err) {
-        case tbtui::App::Err::INIT:
+        case TBTUI::App::Err::INIT:
             std::cout << "APP INIT" << std::endl;
             break;
         }

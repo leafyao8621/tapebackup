@@ -1,20 +1,26 @@
 #include "../app.h"
+#include "../../util/util.h"
 
-tbtui::App::WindowBackup::WindowBackup(App *app) {
+TBTUI::App::WindowBackup::WindowBackup(App *app) {
     this->app = app;
     this->menu_window = newwin(24, 80, 1, 0);
     keypad(this->menu_window, true);
-    this->items = new ITEM*[24];
-    this->items[0] = new_item("XXX", "");
-    this->items[1] = new_item("XXXA", "");
-    this->items[2] = NULL;
+    this->path = getenv("HOME");
+    TBTUI::Util::get_dir(this->path, this->listing);
+    this->items = new ITEM*[listing.size() + 1];
+    ITEM **item_iter = this->items;
+    for (const auto &i : listing) {
+        *item_iter = new_item(i.c_str(), "");
+        ++item_iter;
+    }
+    *item_iter = NULL;
     this->menu = new_menu(this->items);
     set_menu_win(this->menu, this->menu_window);
-    set_menu_sub(this->menu, derwin(this->menu_window, 2, 10, 1, 0));
+    set_menu_sub(this->menu, derwin(this->menu_window, 23, 80, 1, 0));
     post_menu(this->menu);
 }
 
-tbtui::App::WindowBackup::~WindowBackup() {
+TBTUI::App::WindowBackup::~WindowBackup() {
     unpost_menu(this->menu);
     free_menu(this->menu);
     free_item(this->items[0]);
@@ -23,14 +29,15 @@ tbtui::App::WindowBackup::~WindowBackup() {
     delwin(this->menu_window);
 }
 
-void tbtui::App::WindowBackup::render() {
+void TBTUI::App::WindowBackup::render() {
     clear();
     mvprintw(0, 0, "TBTUI - Backup");
     refresh();
+    mvwprintw(this->menu_window, 0, 0, this->path.c_str());
     wrefresh(this->menu_window);
 }
 
-tbtui::App::Window::HandlerStatus tbtui::App::WindowBackup::handle() {
+TBTUI::App::Window::HandlerStatus TBTUI::App::WindowBackup::handle() {
     bool exit = false;
     bool render = false;
     int in = wgetch(this->menu_window);

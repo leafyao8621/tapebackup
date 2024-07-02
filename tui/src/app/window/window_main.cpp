@@ -1,6 +1,6 @@
 #include "../app.h"
 
-tbtui::App::WindowMain::WindowMain(App *app) {
+TBTUI::App::WindowMain::WindowMain(App *app) {
     this->app = app;
     this->menu_window = newwin(2, 10, 1, 0);
     keypad(this->menu_window, true);
@@ -13,7 +13,7 @@ tbtui::App::WindowMain::WindowMain(App *app) {
     post_menu(this->menu);
 }
 
-tbtui::App::WindowMain::~WindowMain() {
+TBTUI::App::WindowMain::~WindowMain() {
     unpost_menu(this->menu);
     free_menu(this->menu);
     free_item(this->items[0]);
@@ -21,14 +21,14 @@ tbtui::App::WindowMain::~WindowMain() {
     delwin(this->menu_window);
 }
 
-void tbtui::App::WindowMain::render() {
+void TBTUI::App::WindowMain::render() {
     clear();
     mvprintw(0, 0, "TBTUI");
     refresh();
     wrefresh(this->menu_window);
 }
 
-tbtui::App::Window::HandlerStatus tbtui::App::WindowMain::handle() {
+TBTUI::App::Window::HandlerStatus TBTUI::App::WindowMain::handle() {
     bool exit = false;
     bool render = false;
     int in = wgetch(this->menu_window);

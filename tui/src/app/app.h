@@ -3,11 +3,12 @@
 
 #include <vector>
 #include <memory>
+#include <string>
 
 #include <ncurses.h>
 #include <menu.h>
 
-namespace tbtui {
+namespace TBTUI {
     class App {
     public:
         class Window {
@@ -37,6 +38,8 @@ namespace tbtui {
             MENU *menu;
             ITEM **items;
             WINDOW *menu_window;
+            std::string path;
+            std::vector<std::string> listing;
         public:
             WindowBackup(App *app);
             ~WindowBackup();
