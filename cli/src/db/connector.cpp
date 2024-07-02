@@ -14,7 +14,7 @@ TBCLI::Connector::Connector() {
     ret =
         sqlite3_prepare_v2(
             this->conn,
-            "CREATE TABLE IF NOT EXISTS MAIN ( "
+            "CREATE TABLE IF NOT EXISTS MAIN ("
             "SIGNATURE BLOB(64) PRIMARY KEY,"
             "WRITE_PROTECTION INTEGER,"
             "HMAC_KEY BLOB(64),"
@@ -113,13 +113,45 @@ TBCLI::Connector::Connector() {
     ret =
         sqlite3_prepare_v2(
             this->conn,
-            "UPDATE MAIN "
-            "SET "
-            "HMAC_VALUE = ? "
-            "WHERE "
-            "SIGNATURE = ?",
+            "UPDATE MAIN SET HMAC_VALUE = ? WHERE SIGNATURE = ?",
             -1,
             &this->stmt_update_hmac,
+            NULL
+        );
+    if (ret) {
+        this->print_err();
+        throw Err::STMT_CREATION;
+    }
+    ret =
+        sqlite3_prepare_v2(
+            this->conn,
+            "SELECT HMAC_KEY FROM MAIN WHERE SIGNATURE = ?",
+            -1,
+            &this->stmt_get_key,
+            NULL
+        );
+    if (ret) {
+        this->print_err();
+        throw Err::STMT_CREATION;
+    }
+    ret =
+        sqlite3_prepare_v2(
+            this->conn,
+            "SELECT HMAC_VALUE FROM MAIN WHERE SIGNATURE = ?",
+            -1,
+            &this->stmt_get_hmac,
+            NULL
+        );
+    if (ret) {
+        this->print_err();
+        throw Err::STMT_CREATION;
+    }
+    ret =
+        sqlite3_prepare_v2(
+            this->conn,
+            "SELECT FILE_NAME FROM MAIN WHERE SIGNATURE = ?",
+            -1,
+            &this->stmt_get_file_name,
             NULL
         );
     if (ret) {
@@ -137,6 +169,9 @@ TBCLI::Connector::~Connector() {
     sqlite3_finalize(this->stmt_update_file_name);
     sqlite3_finalize(this->stmt_update_key);
     sqlite3_finalize(this->stmt_update_hmac);
+    sqlite3_finalize(this->stmt_get_key);
+    sqlite3_finalize(this->stmt_get_hmac);
+    sqlite3_finalize(this->stmt_get_file_name);
     sqlite3_close(this->conn);
 }
 
