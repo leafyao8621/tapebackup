@@ -33,7 +33,7 @@ void TBTUI::App::WindowBackup::render() {
     clear();
     mvprintw(0, 0, "TBTUI - Backup");
     refresh();
-    mvwprintw(this->menu_window, 0, 0, this->path.c_str());
+    mvwaddstr(this->menu_window, 0, 0, this->path.c_str());
     wrefresh(this->menu_window);
 }
 
