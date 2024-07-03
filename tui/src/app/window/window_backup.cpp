@@ -23,8 +23,9 @@ TBTUI::App::WindowBackup::WindowBackup(App *app) {
 TBTUI::App::WindowBackup::~WindowBackup() {
     unpost_menu(this->menu);
     free_menu(this->menu);
-    free_item(this->items[0]);
-    free_item(this->items[1]);
+    for (ITEM **item_iter = this->items; *item_iter; ++item_iter) {
+        free_item(*item_iter);
+    }
     delete[] this->items;
     delwin(this->menu_window);
 }

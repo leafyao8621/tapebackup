@@ -21,6 +21,7 @@ namespace TBTUI {
                 bool render;
                 HandlerStatus(bool exit, bool render);
             };
+            virtual ~Window() {};
             virtual HandlerStatus handle() = 0;
             virtual void render() = 0;
         };
