@@ -14,7 +14,6 @@ TBTUI::App::App() {
     cbreak();
     noecho();
     keypad(stdscr, true);
-    this->windows.push_back(std::make_unique<WindowMain>(this));
 }
 
 TBTUI::App::~App() {
@@ -22,6 +21,7 @@ TBTUI::App::~App() {
 }
 
 void TBTUI::App::run() {
+    this->windows.push_back(std::make_unique<WindowMain>(this));
     this->windows.back()->render();
     for (;;) {
         Window::HandlerStatus status = this->windows.back()->handle();
