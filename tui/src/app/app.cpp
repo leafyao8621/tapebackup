@@ -26,6 +26,7 @@ void TBTUI::App::run() {
     for (;;) {
         Window::HandlerStatus status = this->windows.back()->handle();
         if (status.exit) {
+            for (; this->windows.size(); this->windows.pop_back());
             break;
         }
         if (status.render) {
