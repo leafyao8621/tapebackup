@@ -8,6 +8,9 @@
 #include <ncurses.h>
 #include <menu.h>
 
+#include "../db/connector.h"
+#include "../util/util.h"
+
 namespace TBTUI {
     class App {
     public:
@@ -47,15 +50,37 @@ namespace TBTUI {
             HandlerStatus handle();
             void render();
         };
+        class WindowBackupRun : public Window {
+            enum State {
+                INITIALIZATION,
+                WRITE_PROTECT
+            };
+            State state;
+            MENU *menu;
+            ITEM **items;
+            WINDOW *menu_window, *console_window;
+            std::string path;
+            char signature[64], buf[129];
+        public:
+            WindowBackupRun(App *app, std::string path);
+            ~WindowBackupRun();
+            HandlerStatus handle();
+            void render();
+        };
         enum Err {
-            INIT
+            INIT,
+            FOLDER_CREATION
         };
     private:
         friend class WindowMain;
         friend class WindowBackup;
+        friend class WindowBackupRun;
+        Connector conn;
+        char *dev_name;
+        Util::Gen gen;
         std::vector<std::unique_ptr<Window> > windows;
     public:
-        App();
+        App(char *dev_name);
         ~App();
         void run();
     };
