@@ -58,7 +58,14 @@ TBTUI::App::Window::HandlerStatus TBTUI::App::WindowBackupRun::handle() {
     case 'q':
         exit = true;
         break;
-    case
+    case KEY_UP:
+        menu_driver(this->menu, REQ_UP_ITEM);
+        wrefresh(this->menu_window);
+        break;
+    case KEY_DOWN:
+        menu_driver(this->menu, REQ_DOWN_ITEM);
+        wrefresh(this->menu_window);
+        break;
     }
     return HandlerStatus(exit, render);
 }
