@@ -6,6 +6,9 @@
 
 namespace TBTUI {
     namespace Util {
+        enum Err {
+            INVALID_DIR
+        };
         void get_dir(std::string path, std::vector<std::string> &listing);
     }
 }
