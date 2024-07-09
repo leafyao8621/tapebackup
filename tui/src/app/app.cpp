@@ -2,18 +2,30 @@
 #include <ncurses.h>
 
 #include "app.h"
+#include "../util/util.h"
 
 TBTUI::App::Window::HandlerStatus::HandlerStatus(bool exit, bool render) {
     this->exit = exit;
     this->render = render;
 }
 
-TBTUI::App::App() {
+TBTUI::App::App(char *dev_name) {
     signal(SIGINT, SIG_IGN);
     initscr();
     cbreak();
     noecho();
     keypad(stdscr, true);
+    this->dev_name = dev_name;
+    try {
+        TBTUI::Util::Env env;
+        bool env_check = env.check();
+        if (!env_check) {
+            env.init();
+        }
+    } catch (TBTUI::Util::Env::Err err) {
+        endwin();
+        throw Err::FOLDER_CREATION;
+    }
 }
 
 TBTUI::App::~App() {
@@ -26,7 +38,6 @@ void TBTUI::App::run() {
     for (;;) {
         Window::HandlerStatus status = this->windows.back()->handle();
         if (status.exit) {
-            for (; this->windows.size(); this->windows.pop_back());
             break;
         }
         if (status.render) {
