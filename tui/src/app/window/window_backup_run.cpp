@@ -1,8 +1,14 @@
+#include <pthread.h>
+
 #include "../app.h"
 #include "../../util/util.h"
 
 TBTUI::App::WindowBackupRun::WindowBackupRun(App *app, std::string path) {
     this->state = State::INITIALIZATION;
+    this->running[0] = false;
+    this->running[1] = false;
+    this->cleanup[0] = false;
+    this->cleanup[1] = false;
     this->write_protect = false;
     this->app = app;
     bool is_valid = false;
@@ -33,6 +39,14 @@ TBTUI::App::WindowBackupRun::WindowBackupRun(App *app, std::string path) {
 }
 
 TBTUI::App::WindowBackupRun::~WindowBackupRun() {
+    for (size_t i = 0; i < 2; ++i) {
+        if (this->running[i]) {
+            pthread_cancel(this->pool[i].native_handle());
+        }
+        if (this->cleanup[i]) {
+            this->pool[i].join();
+        }
+    }
     unpost_menu(this->menu);
     free_menu(this->menu);
     for (ITEM **item_iter = this->items; *item_iter; ++item_iter) {
@@ -116,7 +130,19 @@ TBTUI::App::Window::HandlerStatus TBTUI::App::WindowBackupRun::handle() {
                 this->app->windows.pop_back();
                 return HandlerStatus(exit, render);
             }
-
+            this->pool[0] =
+                std::thread(
+                    [](char *path, bool *cleanup, bool *running) {
+                        *cleanup = true;
+                        *running = true;
+                        Util::Archiver archiver;
+                        archiver(path);
+                        *running = false;
+                    },
+                    this->path.c_str(),
+                    this->cleanup,
+                    this->running
+                );
             break;
         }
         break;

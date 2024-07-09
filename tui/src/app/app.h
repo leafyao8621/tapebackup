@@ -67,6 +67,7 @@ namespace TBTUI {
             char signature[64], buf[129];
             bool write_protect;
             std::thread pool[2];
+            bool running[2], cleanup[2];
         public:
             WindowBackupRun(App *app, std::string path);
             ~WindowBackupRun();
