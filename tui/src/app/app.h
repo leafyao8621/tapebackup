@@ -31,7 +31,7 @@ namespace TBTUI {
         class WindowMain : public Window {
             MENU *menu;
             ITEM *items[3];
-            WINDOW *menu_window, *menu_window_sub;
+            WINDOW *menu_window;
         public:
             WindowMain(App *app);
             ~WindowMain();
@@ -41,7 +41,7 @@ namespace TBTUI {
         class WindowBackup : public Window {
             MENU *menu;
             ITEM **items;
-            WINDOW *menu_window, *menu_window_sub;
+            WINDOW *menu_window;
             std::string path;
             std::vector<std::string> listing;
             size_t pos;

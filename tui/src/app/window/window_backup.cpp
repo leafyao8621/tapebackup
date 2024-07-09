@@ -4,7 +4,6 @@
 TBTUI::App::WindowBackup::WindowBackup(App *app) {
     this->app = app;
     this->menu_window = newwin(24, 80, 1, 0);
-    this->menu_window_sub = derwin(this->menu_window, 23, 80, 1, 0);
     keypad(this->menu_window, true);
     this->path = getenv("HOME");
     TBTUI::Util::get_dir(this->path, this->listing);
@@ -17,7 +16,7 @@ TBTUI::App::WindowBackup::WindowBackup(App *app) {
     *item_iter = NULL;
     this->menu = new_menu(this->items);
     set_menu_win(this->menu, this->menu_window);
-    set_menu_sub(this->menu, this->menu_window_sub);
+    set_menu_sub(this->menu, derwin(this->menu_window, 23, 80, 1, 0));
     post_menu(this->menu);
     this->pos = 0;
 }
@@ -105,7 +104,7 @@ TBTUI::App::Window::HandlerStatus TBTUI::App::WindowBackup::handle() {
         *item_iter = NULL;
         this->menu = new_menu(this->items);
         set_menu_win(this->menu, this->menu_window);
-        set_menu_sub(this->menu, this->menu_window_sub);
+        set_menu_sub(this->menu, derwin(this->menu_window, 23, 80, 1, 0));
         post_menu(this->menu);
         this->pos = 0;
         render = true;
@@ -136,12 +135,19 @@ TBTUI::App::Window::HandlerStatus TBTUI::App::WindowBackup::handle() {
         *item_iter = NULL;
         this->menu = new_menu(this->items);
         set_menu_win(this->menu, this->menu_window);
-        set_menu_sub(this->menu, this->menu_window_sub);
+        set_menu_sub(this->menu, derwin(this->menu_window, 23, 80, 1, 0));
         post_menu(this->menu);
         this->pos = 0;
         render = true;
         break;
-    case KEY_ENTER:
+    case '\n':
+        render = true;
+        this->app->windows.push_back(
+            std::make_unique<WindowBackupRun>(
+                this->app,
+                this->path + '/' + current_item(this->menu)->name.str
+            )
+        );
         break;
     }
     return HandlerStatus(exit, render);

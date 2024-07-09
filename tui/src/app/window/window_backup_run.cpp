@@ -44,7 +44,13 @@ void TBTUI::App::WindowBackupRun::render() {
     clear();
     mvprintw(0, 0, "TBTUI - Backup - Run");
     refresh();
-    mvwprintw(this->menu_window, 0, 0, "Backing up %s", this->path.c_str());
+    mvwprintw(
+        this->menu_window, 0, 0,
+        "Backing up %s",
+        this->path.size() > 29 ?
+        this->path.substr(this->path.size() - 29, 29).c_str() :
+        this->path.c_str()
+    );
     wrefresh(this->menu_window);
     wrefresh(this->console_window);
 }
