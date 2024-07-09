@@ -8,7 +8,7 @@ BIN = tbtui
 	$(CPP) -g -c $< -o $@ $(CPPFLAGS)
 
 $(BIN): $(OBJ)
-	$(CPP) $(OBJ) -o $(BIN) -lcrypto -lsqlite3 -pthread -lncurses -lmenu
+	$(CPP) $(OBJ) -o $(BIN) -lcrypto -lsqlite3 -pthread -lncurses -lmenu -ltar
 
 .PHONY: clean valgrind
 clean:

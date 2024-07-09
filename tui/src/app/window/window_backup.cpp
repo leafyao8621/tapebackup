@@ -141,6 +141,9 @@ TBTUI::App::Window::HandlerStatus TBTUI::App::WindowBackup::handle() {
         render = true;
         break;
     case '\n':
+        if (!this->listing.size()) {
+            break;
+        }
         render = true;
         this->app->windows.push_back(
             std::make_unique<WindowBackupRun>(

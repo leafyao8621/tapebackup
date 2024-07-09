@@ -19,6 +19,11 @@ bool TBTUI::Connector::check(char *signature) const {
         this->print_err();
         throw Err::STMT_EXECUTION;
     }
+    ret = sqlite3_reset(this->stmt_check);
+    if (ret) {
+        this->print_err();
+        throw Err::STMT_EXECUTION;
+    }
     return res;
 }
 
@@ -37,6 +42,11 @@ bool TBTUI::Connector::get_write_protection(char *signature) const {
     bool res = sqlite3_column_int(this->stmt_get_write_protection, 0);
     ret = sqlite3_step(this->stmt_get_write_protection);
     if (ret != SQLITE_DONE) {
+        this->print_err();
+        throw Err::STMT_EXECUTION;
+    }
+    ret = sqlite3_reset(this->stmt_get_write_protection);
+    if (ret) {
         this->print_err();
         throw Err::STMT_EXECUTION;
     }
@@ -59,6 +69,11 @@ void TBTUI::Connector::add(char *signature, bool write_protection) const {
         this->print_err();
         throw Err::STMT_EXECUTION;
     }
+    ret = sqlite3_reset(this->stmt_add);
+    if (ret) {
+        this->print_err();
+        throw Err::STMT_EXECUTION;
+    }
 }
 
 void TBTUI::Connector::set_write_protection(char *signature) const {
@@ -75,6 +90,11 @@ void TBTUI::Connector::set_write_protection(char *signature) const {
     }
     ret = sqlite3_step(this->stmt_set_write_protection);
     if (ret != SQLITE_DONE) {
+        this->print_err();
+        throw Err::STMT_EXECUTION;
+    }
+    ret = sqlite3_reset(this->stmt_set_write_protection);
+    if (ret) {
         this->print_err();
         throw Err::STMT_EXECUTION;
     }
@@ -99,6 +119,11 @@ void TBTUI::Connector::update_file_name(
         this->print_err();
         throw Err::STMT_EXECUTION;
     }
+    ret = sqlite3_reset(this->stmt_update_file_name);
+    if (ret) {
+        this->print_err();
+        throw Err::STMT_EXECUTION;
+    }
 }
 
 void TBTUI::Connector::update_key(char *signature, char *key) const {
@@ -119,6 +144,11 @@ void TBTUI::Connector::update_key(char *signature, char *key) const {
         this->print_err();
         throw Err::STMT_EXECUTION;
     }
+    ret = sqlite3_reset(this->stmt_update_key);
+    if (ret) {
+        this->print_err();
+        throw Err::STMT_EXECUTION;
+    }
 }
 
 void TBTUI::Connector::update_hmac(char *signature, char *hmac) const {
@@ -136,6 +166,11 @@ void TBTUI::Connector::update_hmac(char *signature, char *hmac) const {
     }
     ret = sqlite3_step(this->stmt_update_hmac);
     if (ret != SQLITE_DONE) {
+        this->print_err();
+        throw Err::STMT_EXECUTION;
+    }
+    ret = sqlite3_reset(this->stmt_update_hmac);
+    if (ret) {
         this->print_err();
         throw Err::STMT_EXECUTION;
     }
@@ -161,6 +196,11 @@ void TBTUI::Connector::get_key(char *signature, char *key) const {
         this->print_err();
         throw Err::STMT_EXECUTION;
     }
+    ret = sqlite3_reset(this->stmt_get_key);
+    if (ret) {
+        this->print_err();
+        throw Err::STMT_EXECUTION;
+    }
 }
 
 void TBTUI::Connector::get_hmac(char *signature, char *hmac) const {
@@ -183,6 +223,11 @@ void TBTUI::Connector::get_hmac(char *signature, char *hmac) const {
         this->print_err();
         throw Err::STMT_EXECUTION;
     }
+    ret = sqlite3_reset(this->stmt_get_hmac);
+    if (ret) {
+        this->print_err();
+        throw Err::STMT_EXECUTION;
+    }
 }
 
 std::string TBTUI::Connector::get_file_name(char *signature) const {
@@ -202,6 +247,11 @@ std::string TBTUI::Connector::get_file_name(char *signature) const {
     std::string fn = std::string((char*)res);
     ret = sqlite3_step(this->stmt_get_file_name);
     if (ret != SQLITE_DONE) {
+        this->print_err();
+        throw Err::STMT_EXECUTION;
+    }
+    ret = sqlite3_reset(this->stmt_get_file_name);
+    if (ret) {
         this->print_err();
         throw Err::STMT_EXECUTION;
     }

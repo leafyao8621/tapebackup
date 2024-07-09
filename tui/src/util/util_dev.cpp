@@ -47,9 +47,9 @@ bool TBTUI::Util::check_dev_write_protection(char *dev_name) {
 
 void TBTUI::Util::init_dev(
     char *dev_name, char *signature, bool write_protection) {
-    std::ostringstream oss;
-    oss << "mt -f " << dev_name << " rewind";
-    system(oss.str().c_str());
+    // std::ostringstream oss;
+    // oss << "mt -f " << dev_name << " rewind";
+    // system(oss.str().c_str());
     int dev = open(dev_name, O_WRONLY);
     if (dev == -1) {
         throw DEVICE_OPEN;
@@ -66,7 +66,7 @@ void TBTUI::Util::init_dev(
     if (bytes_written != 64) {
         throw DEVICE_WRITE;
     }
-    system(oss.str().c_str());
+    // system(oss.str().c_str());
 }
 
 void TBTUI::Util::set_dev_write_protection(char *dev_name) {

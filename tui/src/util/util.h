@@ -4,6 +4,8 @@
 #include <vector>
 #include <string>
 
+#include <libtar.h>
+
 namespace TBTUI {
     namespace Util {
         enum Err {
@@ -37,6 +39,13 @@ namespace TBTUI {
             Gen();
             ~Gen();
             void operator()(char *buf) const;
+        };
+        class Archiver {
+            TAR *tar;
+        public:
+            Archiver();
+            ~Archiver();
+            void operator()(char *path);
         };
         void get_dir(std::string path, std::vector<std::string> &listing);
         void check_dev(char *dev_name, char *signature);

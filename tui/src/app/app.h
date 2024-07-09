@@ -4,6 +4,7 @@
 #include <vector>
 #include <memory>
 #include <string>
+#include <thread>
 
 #include <ncurses.h>
 #include <menu.h>
@@ -54,7 +55,9 @@ namespace TBTUI {
         class WindowBackupRun : public Window {
             enum State {
                 INITIALIZATION,
-                WRITE_PROTECT
+                GENERATE_SIGNATURE,
+                WRITE_PROTECT,
+                INITIATE_ARCHIVING
             };
             State state;
             MENU *menu;
@@ -62,6 +65,8 @@ namespace TBTUI {
             WINDOW *menu_window, *console_window;
             std::string path;
             char signature[64], buf[129];
+            bool write_protect;
+            std::thread pool[2];
         public:
             WindowBackupRun(App *app, std::string path);
             ~WindowBackupRun();
