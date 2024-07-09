@@ -57,7 +57,9 @@ namespace TBTUI {
                 INITIALIZATION,
                 GENERATE_SIGNATURE,
                 WRITE_PROTECT,
-                INITIATE_ARCHIVING
+                INITIATE_ARCHIVING,
+                ARCHIVING,
+                INITIATE_WRITING
             };
             State state;
             MENU *menu;

@@ -22,6 +22,6 @@ TBTUI::Util::Archiver::~Archiver() {
 }
 
 void TBTUI::Util::Archiver::operator()(char *path) {
-    tar_append_tree(this->tar, path, ".");
+    tar_append_tree(this->tar, path, (char*)".");
     tar_append_eof(this->tar);
 }

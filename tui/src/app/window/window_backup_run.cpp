@@ -119,7 +119,7 @@ TBTUI::App::Window::HandlerStatus TBTUI::App::WindowBackupRun::handle() {
             this->app->conn.add(this->signature, this->write_protect);
             wprintw(
                 this->console_window,
-                "Tape initialized\nInitiate archiving?"
+                "Tape initialized\nInitiate archiving?\n"
             );
             wrefresh(this->console_window);
             this->state = INITIATE_ARCHIVING;
@@ -132,17 +132,35 @@ TBTUI::App::Window::HandlerStatus TBTUI::App::WindowBackupRun::handle() {
             }
             this->pool[0] =
                 std::thread(
-                    [](char *path, bool *cleanup, bool *running) {
+                    [](
+                        std::string path,
+                        bool *cleanup,
+                        bool *running,
+                        State *state,
+                        WINDOW *window) {
                         *cleanup = true;
                         *running = true;
+                        *state = State::ARCHIVING;
+                        wprintw(window, "Archiving\n");
+                        wrefresh(window);
                         Util::Archiver archiver;
-                        archiver(path);
+                        archiver((char*)path.c_str());
+                        wprintw(window, "Archiving completed\n");
+                        wrefresh(window);
+                        *state = State::INITIATE_WRITING;
                         *running = false;
                     },
-                    this->path.c_str(),
-                    this->cleanup,
-                    this->running
+                    this->path,
+                    &this->cleanup[0],
+                    &this->running[0],
+                    &this->state,
+                    this->console_window
                 );
+
+            break;
+        case ARCHIVING:
+            break;
+        case INITIATE_WRITING:
             break;
         }
         break;
