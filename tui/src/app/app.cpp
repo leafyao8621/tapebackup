@@ -10,6 +10,9 @@ TBTUI::App::Window::HandlerStatus::HandlerStatus(bool exit, bool render) {
 }
 
 TBTUI::App::App(char *dev_name) {
+    this->block_size_write = 65536;
+    this->block_size_hmac = 65536;
+    this->block_size_read = 65536;
     signal(SIGINT, SIG_IGN);
     initscr();
     cbreak();

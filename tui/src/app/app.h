@@ -5,6 +5,7 @@
 #include <memory>
 #include <string>
 #include <thread>
+#include <mutex>
 
 #include <ncurses.h>
 #include <menu.h>
@@ -59,15 +60,17 @@ namespace TBTUI {
                 WRITE_PROTECT,
                 INITIATE_ARCHIVING,
                 ARCHIVING,
-                INITIATE_WRITING
+                INITIATE_WRITING,
+                WRITING
             };
             State state;
             MENU *menu;
             ITEM **items;
             WINDOW *menu_window, *console_window;
             std::string path;
-            char signature[64], buf[129];
+            char signature[64], buf[129], hmac_key[64], hmac_md[64];
             bool write_protect;
+            std::mutex mutex;
             std::thread pool[2];
             bool running[2], cleanup[2];
         public:
@@ -88,6 +91,7 @@ namespace TBTUI {
         char *dev_name;
         Util::Gen gen;
         std::vector<std::unique_ptr<Window> > windows;
+        size_t block_size_write, block_size_hmac, block_size_read;
     public:
         App(char *dev_name);
         ~App();

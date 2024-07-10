@@ -3,8 +3,11 @@
 
 #include <vector>
 #include <string>
+#include <mutex>
 
 #include <libtar.h>
+#include <openssl/evp.h>
+#include <ncurses.h>
 
 namespace TBTUI {
     namespace Util {
@@ -46,6 +49,39 @@ namespace TBTUI {
             Archiver();
             ~Archiver();
             void operator()(char *path);
+        };
+        class HMAC {
+            EVP_MAC *evp_mac;
+            EVP_MAC_CTX *evp_mac_ctx;
+            OSSL_PARAM param[2];
+            char *buf;
+            int fd;
+            size_t block_size;
+        public:
+            enum Err {
+                CREATION,
+                INITIALIZATION,
+                UPDATE,
+                FINALIZATION
+            };
+            HMAC(size_t block_size);
+            ~HMAC();
+            void operator()(
+                char *path,
+                char *key,
+                char *md,
+                WINDOW *window,
+                std::mutex &mutex);
+        };
+        class Writer {
+            int fd_in, fd_out;
+            char *buf;
+            size_t block_size;
+        public:
+            Writer(size_t block_size);
+            ~Writer();
+            void operator()(
+                char *path, char *dev, WINDOW *window, std::mutex &mutex);
         };
         void get_dir(std::string path, std::vector<std::string> &listing);
         void check_dev(char *dev_name, char *signature);

@@ -2,7 +2,6 @@
 #include <sstream>
 #include <cstring>
 #include <fcntl.h>
-
 #include <unistd.h>
 
 #include "util.h"

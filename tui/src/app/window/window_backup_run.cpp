@@ -145,7 +145,12 @@ TBTUI::App::Window::HandlerStatus TBTUI::App::WindowBackupRun::handle() {
                         wrefresh(window);
                         Util::Archiver archiver;
                         archiver((char*)path.c_str());
-                        wprintw(window, "Archiving completed\n");
+                        wprintw(
+                            window, "%s",
+                            "Archiving completed\n"
+                            "Hit enter to go back after completion\n"
+                            "Initiate writing?\n"
+                        );
                         wrefresh(window);
                         *state = State::INITIATE_WRITING;
                         *running = false;
@@ -156,14 +161,122 @@ TBTUI::App::Window::HandlerStatus TBTUI::App::WindowBackupRun::handle() {
                     &this->state,
                     this->console_window
                 );
-
             break;
         case ARCHIVING:
             break;
         case INITIATE_WRITING:
+            if (item_index(current_item(this->menu))) {
+                render = true;
+                this->app->windows.pop_back();
+                return HandlerStatus(exit, render);
+            }
+            this->app->gen(this->hmac_key);
+            this->app->conn.update_key(this->signature, this->hmac_key);
+            Util::get_hex(this->hmac_key, this->buf);
+            wprintw(
+                this->console_window,
+                "Generated HMAC key\n%s\n",
+                this->buf
+            );
+            wrefresh(this->console_window);
+            unpost_menu(this->menu);
+            free_menu(this->menu);
+            free_item(this->items[1]);
+            this->items[1] = NULL;
+            this->menu = new_menu(this->items);
+            set_menu_win(this->menu, this->menu_window);
+            set_menu_sub(this->menu, derwin(this->menu_window, 23, 40, 1, 0));
+            post_menu(this->menu);
+            wrefresh(this->menu_window);
+            this->state = WRITING;
+            this->pool[0].join();
+            this->pool[0] =
+                std::thread(
+                    [](
+                        std::string path,
+                        char *dev,
+                        size_t block_size,
+                        bool *cleanup,
+                        bool *running,
+                        WINDOW *window,
+                        std::mutex &mutex) {
+                        *cleanup = true;
+                        *running = true;
+                        {
+                            std::lock_guard<std::mutex> guard(mutex);
+                            wprintw(window, "Writing\n");
+                            wrefresh(window);
+                        }
+                        Util::Writer writer(block_size);
+                        writer((char*)path.c_str(), dev, window, mutex);
+                        {
+                            std::lock_guard<std::mutex> guard(mutex);
+                            wprintw(window, "Writing completed\n");
+                            wrefresh(window);
+                        }
+                        *running = false;
+                    },
+                    getenv("HOME") + std::string("/backup/backup.tar"),
+                    this->app->dev_name,
+                    this->app->block_size_write,
+                    &this->cleanup[0],
+                    &this->running[0],
+                    this->console_window,
+                    std::ref(this->mutex)
+                );
+            this->pool[1] =
+                std::thread(
+                    [](
+                        std::string path,
+                        char *hmac_key,
+                        char *hmac_md,
+                        size_t block_size,
+                        bool *cleanup,
+                        bool *running,
+                        WINDOW *window,
+                        std::mutex &mutex) {
+                        *cleanup = true;
+                        *running = true;
+                        {
+                            std::lock_guard<std::mutex> guard(mutex);
+                            wprintw(window, "Calculating\n");
+                            wrefresh(window);
+                        }
+                        Util::HMAC hmac(block_size);
+                        hmac(
+                            (char*)path.c_str(),
+                            hmac_key,
+                            hmac_md,
+                            window,
+                            mutex
+                        );
+                        {
+                            std::lock_guard<std::mutex> guard(mutex);
+                            wprintw(window, "Calculating completed\n");
+                            wrefresh(window);
+                        }
+                        wrefresh(window);
+                        *running = false;
+                    },
+                    getenv("HOME") + std::string("/backup/backup.tar"),
+                    this->hmac_key,
+                    this->hmac_md,
+                    this->app->block_size_hmac,
+                    &this->cleanup[1],
+                    &this->running[1],
+                    this->console_window,
+                    std::ref(this->mutex)
+                );
+            break;
+        case WRITING:
+            if (this->running[0] || this->running[1]) {
+                break;
+            }
+            this->app->conn.update_hmac(this->signature, this->hmac_md);
+            render = true;
+            this->app->windows.pop_back();
             break;
         }
-        break;
     }
     return HandlerStatus(exit, render);
 }

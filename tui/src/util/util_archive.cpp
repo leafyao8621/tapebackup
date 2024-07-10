@@ -7,6 +7,7 @@
 TBTUI::Util::Archiver::Archiver() {
     std::ostringstream oss;
     oss << getenv("HOME") << "/backup/backup.tar";
+    remove(oss.str().c_str());
     tar_open(
         &this->tar,
         oss.str().c_str(),
