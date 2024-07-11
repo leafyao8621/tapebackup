@@ -2,7 +2,7 @@ CPP = g++
 CPPFLAGS = -Wall -Wextra -pedantic -Werror
 SRC = $(wildcard src/*.cpp) $(wildcard src/*/*.cpp)
 OBJ = $(SRC:.cpp=.o)
-BIN = tbcli-int
+BIN = tbcli
 
 %.o: %.cpp
 	$(CPP) -O3 -c $< -o $@ $(CPPFLAGS)
