@@ -20,8 +20,6 @@ int main(int argc, char **argv) {
             std::cout << "Cannot create ~/backup" << std::endl;
             break;
         }
-    } catch (TBTUI::Connector::Err) {
-        std::cout << "DB INIT" << std::endl;
     } catch (TBTUI::Util::Gen::Err) {
         std::cout << "GEN INIT" << std::endl;
     }

@@ -19,8 +19,30 @@ TBTUI::App::WindowBackupRun::WindowBackupRun(App *app, std::string path) {
     if (is_valid) {
         Util::get_hex(this->signature, this->buf);
         wprintw(this->console_window, "Found valid signature\n%s\n", this->buf);
-        this->items = new ITEM*[1];
-        this->items[0] = NULL;
+        bool write_protection_dev =
+            Util::check_dev_write_protection(this->app->dev_name);
+        bool write_protection_db =
+            this->app->conn.get_write_protection(this->signature);
+        if (write_protection_db != write_protection_dev) {
+            wprintw(this->console_window, "%s\n", "Write protect tampered");
+            this->items = new ITEM*[2];
+            this->items[0] = new_item("Yes", "");
+            this->items[1] = NULL;
+            this->state = ERROR;
+        } else if (write_protection_db) {
+            wprintw(this->console_window, "%s\n", "Write protected");
+            this->items = new ITEM*[2];
+            this->items[0] = new_item("Yes", "");
+            this->items[1] = NULL;
+            this->state = ERROR;
+        } else {
+            this->items = new ITEM*[3];
+            wprintw(this->console_window, "%s\n", "Write protect?");
+            this->items[0] = new_item("Yes", "");
+            this->items[1] = new_item("No", "");
+            this->items[2] = NULL;
+            this->state = State::SET_WRITE_PROTECT;
+        }
     } else {
         waddstr(this->console_window, "Generate new signature?\n");
         this->items = new ITEM*[3];
@@ -89,6 +111,10 @@ TBTUI::App::Window::HandlerStatus TBTUI::App::WindowBackupRun::handle() {
         menu_driver(this->menu, REQ_DOWN_ITEM);
         wrefresh(this->menu_window);
         break;
+    case KEY_BACKSPACE:
+        render = true;
+        this->app->windows.pop_back();
+        break;
     case '\n':
         switch (this->state) {
         case INITIALIZATION:
@@ -119,7 +145,27 @@ TBTUI::App::Window::HandlerStatus TBTUI::App::WindowBackupRun::handle() {
             this->app->conn.add(this->signature, this->write_protect);
             wprintw(
                 this->console_window,
-                "Tape initialized\nInitiate archiving?\n"
+                "%s\n",
+                "Tape initialized\nInitiate archiving?"
+            );
+            wrefresh(this->console_window);
+            this->state = INITIATE_ARCHIVING;
+            break;
+        case SET_WRITE_PROTECT:
+            this->write_protect = !item_index(current_item(this->menu));
+            if (this->write_protect) {
+                Util::set_dev_write_protection(this->app->dev_name);
+                this->app->conn.set_write_protection(this->signature);
+                wprintw(
+                    this->console_window,
+                    "%s\n",
+                    "Write protect set"
+                );
+            }
+            wprintw(
+                this->console_window,
+                "%s\n",
+                "Initiate archiving?"
             );
             wrefresh(this->console_window);
             this->state = INITIATE_ARCHIVING;
@@ -273,6 +319,10 @@ TBTUI::App::Window::HandlerStatus TBTUI::App::WindowBackupRun::handle() {
                 break;
             }
             this->app->conn.update_hmac(this->signature, this->hmac_md);
+            render = true;
+            this->app->windows.pop_back();
+            break;
+        case ERROR:
             render = true;
             this->app->windows.pop_back();
             break;

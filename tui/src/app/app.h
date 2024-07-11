@@ -61,7 +61,9 @@ namespace TBTUI {
                 INITIATE_ARCHIVING,
                 ARCHIVING,
                 INITIATE_WRITING,
-                WRITING
+                WRITING,
+                ERROR,
+                SET_WRITE_PROTECT
             };
             State state;
             MENU *menu;
