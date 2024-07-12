@@ -70,6 +70,7 @@ namespace TBTUI {
                 char *path,
                 char *key,
                 char *md,
+                bool skip_header,
                 WINDOW *window,
                 std::mutex &mutex);
         };

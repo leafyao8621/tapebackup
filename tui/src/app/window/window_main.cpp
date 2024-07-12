@@ -2,14 +2,15 @@
 
 TBTUI::App::WindowMain::WindowMain(App *app) {
     this->app = app;
-    this->menu_window = newwin(2, 10, 1, 0);
+    this->menu_window = newwin(24, 80, 1, 0);
     keypad(this->menu_window, true);
     this->items[0] = new_item("Backup", "");
     this->items[1] = new_item("Restore", "");
-    this->items[2] = NULL;
+    this->items[2] = new_item("Check", "");
+    this->items[3] = NULL;
     this->menu = new_menu(this->items);
     set_menu_win(this->menu, this->menu_window);
-    set_menu_sub(this->menu, derwin(this->menu_window, 2, 10, 0, 0));
+    set_menu_sub(this->menu, derwin(this->menu_window, 24, 80, 0, 0));
     post_menu(this->menu);
 }
 
@@ -18,6 +19,7 @@ TBTUI::App::WindowMain::~WindowMain() {
     free_menu(this->menu);
     free_item(this->items[0]);
     free_item(this->items[1]);
+    free_item(this->items[2]);
     delwin(this->menu_window);
 }
 
@@ -54,6 +56,12 @@ TBTUI::App::Window::HandlerStatus TBTUI::App::WindowMain::handle() {
             );
             break;
         case 1:
+            break;
+        case 2:
+            render = true;
+            this->app->windows.push_back(
+                std::make_unique<WindowCheck>(this->app)
+            );
             break;
         }
     }

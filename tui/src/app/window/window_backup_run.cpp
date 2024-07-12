@@ -293,6 +293,7 @@ TBTUI::App::Window::HandlerStatus TBTUI::App::WindowBackupRun::handle() {
                             (char*)path.c_str(),
                             hmac_key,
                             hmac_md,
+                            false,
                             window,
                             mutex
                         );

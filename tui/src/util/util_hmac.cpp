@@ -30,17 +30,26 @@ TBTUI::Util::HMAC::~HMAC() {
 }
 
 void TBTUI::Util::HMAC::operator()(
-    char *path, char *key, char *md, WINDOW *window, std::mutex &mutex) {
+    char *path,
+    char *key,
+    char *md,
+    bool skip_header,
+    WINDOW *window,
+    std::mutex &mutex) {
     if (
         !EVP_MAC_init(
             this->evp_mac_ctx, (const unsigned char*)key, 64, this->param)) {
         throw Err::INITIALIZATION;
     }
-    int fd = open(path, O_RDONLY);
+    this->fd = open(path, O_RDONLY);
+    if (skip_header) {
+        read(this->fd, this->buf, 64);
+        read(this->fd, this->buf, 64);
+    }
     ssize_t bytes_read = 0;
     for (
         size_t i = 0;
-        (bytes_read = read(fd, this->buf, this->block_size));
+        (bytes_read = read(this->fd, this->buf, this->block_size));
         ++i) {
         if (window) {
             std::lock_guard<std::mutex> guard(mutex);

@@ -32,7 +32,7 @@ namespace TBTUI {
         };
         class WindowMain : public Window {
             MENU *menu;
-            ITEM *items[3];
+            ITEM *items[4];
             WINDOW *menu_window;
         public:
             WindowMain(App *app);
@@ -78,6 +78,30 @@ namespace TBTUI {
         public:
             WindowBackupRun(App *app, std::string path);
             ~WindowBackupRun();
+            HandlerStatus handle();
+            void render();
+        };
+        class WindowCheck : public Window {
+             enum State {
+                INITIALIZATION,
+                CHECKING,
+                ERROR
+            };
+            State state;
+            MENU *menu;
+            ITEM *items[2];
+            WINDOW *menu_window, *console_window;
+            std::thread worker;
+            std::mutex mutex;
+            bool running, cleanup;
+            char signature[64];
+            char buf[129];
+            char hmac_key[64];
+            char hmac_md[64];
+            char hmac_md_dev[64];
+        public:
+            WindowCheck(App *app);
+            ~WindowCheck();
             HandlerStatus handle();
             void render();
         };
