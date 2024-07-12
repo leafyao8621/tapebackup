@@ -64,7 +64,6 @@ int main(int argc, char **argv) {
     try {
         TBCLI::App app;
         if (write) {
-            std::cout << dev << '\n' << path << std::endl;
             app.write(
                 (char*)dev.c_str(),
                 (char*)path.c_str(),
