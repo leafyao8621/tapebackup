@@ -78,6 +78,11 @@ int main(int argc, char **argv) {
                     (char*)path.c_str(),
                     verbose
                 );
+            } else {
+                app.read(
+                    (char*)dev.c_str(),
+                    verbose
+                );
             }
         }
     } catch (TBCLI::App::Err err) {

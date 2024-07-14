@@ -31,6 +31,7 @@ namespace TBCLI {
         App();
         void write(char *dev, char *path, bool write_protect, bool verbose);
         void read(char *dev, char *path, bool verbose);
+        void read(char *dev, bool verbose);
     };
 }
 

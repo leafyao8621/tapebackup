@@ -17,3 +17,4 @@ clean:
 valgrind: $(BIN)
 	@valgrind -s --leak-check=full --show-leak-kinds=all ./$(BIN) -p ~/editor_dot_files -v write ~/dummy.img
 	@valgrind -s --leak-check=full --show-leak-kinds=all ./$(BIN) -p . -v read ~/dummy.img
+	@valgrind -s --leak-check=full --show-leak-kinds=all ./$(BIN) -v read ~/dummy.img
