@@ -23,10 +23,14 @@ namespace TBCLI {
         enum Err {
             WRITE_PROTECT_TAMPERED,
             WRITE_PROTECTED,
-            WRITE
+            WRITE,
+            INVALID_SIGNATURE,
+            READ,
+            FILE_TAMPERED
         };
         App();
         void write(char *dev, char *path, bool write_protect, bool verbose);
+        void read(char *dev, char *path, bool verbose);
     };
 }
 

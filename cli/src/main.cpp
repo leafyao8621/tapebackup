@@ -71,6 +71,15 @@ int main(int argc, char **argv) {
                 verbose
             );
         }
+        if (read) {
+            if (path_set) {
+                app.read(
+                    (char*)dev.c_str(),
+                    (char*)path.c_str(),
+                    verbose
+                );
+            }
+        }
     } catch (TBCLI::App::Err err) {
         switch (err) {
         case TBCLI::App::Err::WRITE_PROTECT_TAMPERED:
@@ -81,6 +90,15 @@ int main(int argc, char **argv) {
             break;
         case TBCLI::App::Err::WRITE:
             std::cerr << "APP WRITE" << std::endl;
+            break;
+        case TBCLI::App::Err::INVALID_SIGNATURE:
+            std::cerr << "APP INVALID_SIGNATURE" << std::endl;
+            break;
+        case TBCLI::App::Err::READ:
+            std::cerr << "APP READ" << std::endl;
+            break;
+        case TBCLI::App::Err::FILE_TAMPERED:
+            std::cerr << "APP FILE_TAMPERED" << std::endl;
             break;
         }
         return 1;
