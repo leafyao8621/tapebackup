@@ -47,6 +47,9 @@ int main(int argc, char **argv) {
         std::cerr << msg << std::endl;
         return -1;
     }
+    if (path[path.size() - 1] == '/') {
+        path = path.substr(0, path.size() - 1);
+    }
     if (!strcmp(argv[optind], "read")) {
         read = true;
     }
