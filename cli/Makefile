@@ -8,7 +8,7 @@ BIN = tbcli
 	$(CPP) -g -c $< -o $@ $(CPPFLAGS)
 
 $(BIN): $(OBJ)
-	$(CPP) $(OBJ) -o $(BIN) -lcrypto -lsqlite3 -pthread -ltar
+	$(CPP) $(OBJ) -o $(BIN) -lcrypto -lsqlite3 -pthread -larchive
 
 .PHONY: clean valgrind
 clean:

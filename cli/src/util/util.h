@@ -5,7 +5,7 @@
 #include <string>
 #include <mutex>
 
-#include <libtar.h>
+#include <archive.h>
 #include <openssl/evp.h>
 
 namespace TBCLI {
@@ -43,15 +43,22 @@ namespace TBCLI {
             void operator()(char *buf) const;
         };
         class Archiver {
-            TAR *tar;
+            struct archive *archive;
+            struct archive *disk;
+            struct archive_entry *entry;
+            bool verbose;
+            size_t block_size;
+            char *buf;
+            int fd;
+            struct stat sb;
         public:
             enum Err {
                 OPEN,
                 APPEND
             };
-            Archiver();
+            Archiver(char *path, size_t block_size, bool verbose);
             ~Archiver();
-            void operator()(char *path);
+            void operator()();
         };
         class HMAC {
             EVP_MAC *evp_mac;

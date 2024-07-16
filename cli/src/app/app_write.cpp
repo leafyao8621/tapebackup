@@ -40,8 +40,10 @@ void TBCLI::App::write(
         this->conn.add(this->signature, write_protect);
     }
     this->conn.update_file_name(this->signature, path);
-    Util::Archiver archiver;
-    archiver(path);
+    {
+        Util::Archiver archiver(path, this->block_size_archive, verbose);
+        archiver();
+    }
     bool failure = false;
     std::ostringstream oss;
     oss << getenv("HOME") << "/backup/backup.tar";

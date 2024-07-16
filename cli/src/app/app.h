@@ -17,7 +17,10 @@ namespace TBCLI {
         char hmac_md[64];
         char hmac_md_dev[64];
         char buf[129];
-        size_t block_size_hmac, block_size_write, block_size_read;
+        size_t block_size_hmac;
+        size_t block_size_write;
+        size_t block_size_read;
+        size_t block_size_archive;
         std::mutex mutex;
     public:
         enum Err {
