@@ -29,6 +29,7 @@ TBCLI::Util::Archiver::Archiver(char *path, size_t block_size, bool verbose) {
     }
     archive_read_disk_set_standard_lookup(this->disk);
     this->entry = archive_entry_new();
+    this->fd = -1;
 }
 
 TBCLI::Util::Archiver::~Archiver() {
@@ -71,7 +72,6 @@ void TBCLI::Util::Archiver::operator()() {
         if (S_ISDIR(this->sb.st_mode)) {
             continue;
         }
-        this->fd = -1;
         this->fd = open(archive_entry_sourcepath(entry), O_RDONLY);
         if (this->fd == -1) {
             throw Err::APPEND;
@@ -88,5 +88,7 @@ void TBCLI::Util::Archiver::operator()() {
                 throw Err::APPEND;
             }
         }
+        close(this->fd);
+        this->fd = -1;
     }
 }
