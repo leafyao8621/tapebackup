@@ -18,16 +18,56 @@ const static char *msg =
 int main(int argc, char **argv) {
     int ret = 0;
     bool path_set = false;
+    bool read_set = false;
+    bool write_set = false;
+    bool hmac_set = false;
+    bool archive_set = false;
+    size_t block_size_read = 0;
+    size_t block_size_write = 0;
+    size_t block_size_hmac = 0;
+    size_t block_size_archive = 0;
     std::string path = "";
     bool write_protect = false;
     bool read = false;
     bool write = false;
     bool verbose = false;
-    for (; (ret = getopt(argc, argv, "p:wv")) != -1;) {
+    for (; (ret = getopt(argc, argv, "p:i:o:h:a:wv")) != -1;) {
         switch (ret) {
         case 'p':
             path_set = true;
             path = optarg;
+            break;
+        case 'i':
+            read_set = true;
+            block_size_read = atol(optarg);
+            if (block_size_read == (size_t)-1) {
+                std::cerr << msg << std::endl;
+                return -1;
+            }
+            break;
+        case 'o':
+            write_set = true;
+            block_size_write = atol(optarg);
+            if (block_size_write == (size_t)-1) {
+                std::cerr << msg << std::endl;
+                return -1;
+            }
+            break;
+        case 'h':
+            hmac_set = true;
+            block_size_hmac = atol(optarg);
+            if (block_size_hmac == (size_t)-1) {
+                std::cerr << msg << std::endl;
+                return -1;
+            }
+            break;
+        case 'a':
+            archive_set = true;
+            block_size_archive = atol(optarg);
+            if (block_size_archive == (size_t)-1) {
+                std::cerr << msg << std::endl;
+                return -1;
+            }
             break;
         case 'w':
             write_protect = true;
@@ -66,6 +106,18 @@ int main(int argc, char **argv) {
     std::string dev = argv[optind + 1];
     try {
         TBCLI::App app;
+        if (read_set) {
+            app.set_block_size_read(block_size_read);
+        }
+        if (write_set) {
+            app.set_block_size_write(block_size_write);
+        }
+        if (hmac_set) {
+            app.set_block_size_hmac(block_size_hmac);
+        }
+        if (archive_set) {
+            app.set_block_size_archive(block_size_archive);
+        }
         if (write) {
             app.write(
                 (char*)dev.c_str(),

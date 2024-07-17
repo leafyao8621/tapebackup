@@ -32,6 +32,10 @@ namespace TBCLI {
             FILE_TAMPERED
         };
         App();
+        void set_block_size_hmac(size_t size);
+        void set_block_size_write(size_t size);
+        void set_block_size_read(size_t size);
+        void set_block_size_archive(size_t size);
         void write(char *dev, char *path, bool write_protect, bool verbose);
         void read(char *dev, char *path, bool verbose);
         void read(char *dev, bool verbose);
