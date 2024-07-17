@@ -77,6 +77,9 @@ void TBCLI::Util::set_dev_write_protection(char *dev_name) {
         throw DEVICE_OPEN;
     }
     memset(buf, 0xff, 64);
-    write(dev, buf, 64);
+    if (write(dev, buf, 64) != 64) {
+        close(dev);
+        throw DEVICE_WRITE;
+    }
     close(dev);
 }
