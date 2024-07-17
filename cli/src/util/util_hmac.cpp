@@ -45,8 +45,12 @@ void TBCLI::Util::HMAC::operator()(
     }
     this->fd = open(path, O_RDONLY);
     if (skip_header) {
-        read(this->fd, this->buf, 64);
-        read(this->fd, this->buf, 64);
+        if (read(this->fd, this->buf, 64)) {
+            throw Err::INITIALIZATION;
+        }
+        if (read(this->fd, this->buf, 64)) {
+            throw Err::INITIALIZATION;
+        }
     }
     ssize_t bytes_read = 0;
     for (
