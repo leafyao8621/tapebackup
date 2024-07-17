@@ -33,8 +33,12 @@ void TBCLI::Util::Writer::operator()(
         throw Err::OPEN;
     }
     char buf[64];
-    read(this->fd_out, buf, 64);
-    read(this->fd_out, buf, 64);
+    if (read(this->fd_out, buf, 64) == -1) {
+        throw Err::READ;
+    }
+    if (read(this->fd_out, buf, 64) == -1) {
+        throw Err::READ;
+    }
     ssize_t bytes_read = 0;
     for (
         size_t i = 0;
