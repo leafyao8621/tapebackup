@@ -7,31 +7,32 @@
 #include "util.h"
 
 void TBCLI::Util::check_dev(char *dev_name, char *signature) {
-    // std::ostringstream oss;
-    // oss << "mt -f " << dev_name << " rewind";
-    // system(oss.str().c_str());
     int dev = open(dev_name, O_RDONLY);
     if (dev == -1) {
         throw DEVICE_OPEN;
     }
-    read(dev, signature, 64);
+    if (read(dev, signature, 64) == -1) {
+        close(dev);
+        throw DEVICE_OPEN;
+    }
     close(dev);
-    // system(oss.str().c_str());
 }
 
 bool TBCLI::Util::check_dev_write_protection(char *dev_name) {
     char buf[64];
-    // std::ostringstream oss;
-    // oss << "mt -f " << dev_name << " rewind";
-    // system(oss.str().c_str());
     int dev = open(dev_name, O_RDONLY);
     if (dev == -1) {
         throw DEVICE_OPEN;
     }
-    read(dev, &buf, 64);
-    read(dev, &buf, 64);
+    if (read(dev, buf, 64) == -1) {
+        close(dev);
+        throw DEVICE_OPEN;
+    }
+    if (read(dev, buf, 64) == -1) {
+        close(dev);
+        throw DEVICE_OPEN;
+    }
     close(dev);
-    // system(oss.str().c_str());
     char all_one[64];
     char all_zero[64] = {0};
     memset(all_one, 0xff, 64);
@@ -46,9 +47,6 @@ bool TBCLI::Util::check_dev_write_protection(char *dev_name) {
 
 void TBCLI::Util::init_dev(
     char *dev_name, char *signature, bool write_protection) {
-    // std::ostringstream oss;
-    // oss << "mt -f " << dev_name << " rewind";
-    // system(oss.str().c_str());
     int dev = open(dev_name, O_WRONLY);
     if (dev == -1) {
         throw DEVICE_OPEN;
@@ -65,22 +63,20 @@ void TBCLI::Util::init_dev(
     if (bytes_written != 64) {
         throw DEVICE_WRITE;
     }
-    // system(oss.str().c_str());
 }
 
 void TBCLI::Util::set_dev_write_protection(char *dev_name) {
     char buf[64];
-    // std::ostringstream oss;
-    // oss << "mt -f " << dev_name << " rewind";
-    // system(oss.str().c_str());
     int dev = open(dev_name, O_RDWR);
     if (dev == -1) {
         close(dev);
         throw DEVICE_OPEN;
     }
-    read(dev, buf, 64);
+    if (read(dev, buf, 64) == -1) {
+        close(dev);
+        throw DEVICE_OPEN;
+    }
     memset(buf, 0xff, 64);
     write(dev, buf, 64);
     close(dev);
-    // system(oss.str().c_str());
 }

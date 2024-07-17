@@ -11,7 +11,10 @@ void TBCLI::Util::check_dev(char *dev_name, char *signature) {
     if (dev == -1) {
         throw DEVICE_OPEN;
     }
-    read(dev, signature, 64);
+    if (read(dev, signature, 64) == -1) {
+        close(dev);
+        throw DEVICE_OPEN;
+    }
     close(dev);
 }
 
@@ -21,8 +24,14 @@ bool TBCLI::Util::check_dev_write_protection(char *dev_name) {
     if (dev == -1) {
         throw DEVICE_OPEN;
     }
-    read(dev, &buf, 64);
-    read(dev, &buf, 64);
+    if (read(dev, buf, 64) == -1) {
+        close(dev);
+        throw DEVICE_OPEN;
+    }
+    if (read(dev, buf, 64) == -1) {
+        close(dev);
+        throw DEVICE_OPEN;
+    }
     close(dev);
     char all_one[64];
     char all_zero[64] = {0};
@@ -63,7 +72,10 @@ void TBCLI::Util::set_dev_write_protection(char *dev_name) {
         close(dev);
         throw DEVICE_OPEN;
     }
-    read(dev, buf, 64);
+    if (read(dev, buf, 64) == -1) {
+        close(dev);
+        throw DEVICE_OPEN;
+    }
     memset(buf, 0xff, 64);
     write(dev, buf, 64);
     close(dev);
