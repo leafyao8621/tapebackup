@@ -1,6 +1,11 @@
+import os
+
 import tapebackup
 
 if __name__ == "__main__":
-    tapebackup.write("/home/leaf/test", "/home/leaf/dummy.img")
-    tapebackup.read(".", "/home/leaf/dummy.img")
-    tapebackup.check("/home/leaf/dummy.img")
+    tapebackup.write(
+        f"{os.getenv('HOME')}/test",
+        f"{os.getenv('HOME')}/dummy.img"
+    )
+    tapebackup.read(".", f"{os.getenv('HOME')}/dummy.img")
+    tapebackup.check(f"{os.getenv('HOME')}/dummy.img")
