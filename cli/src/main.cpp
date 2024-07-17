@@ -12,6 +12,10 @@ const static char *msg =
     "<DEVICE>\n\n"
     "Options:\n"
     "-p <PATH>\n"
+    "-i <READ BLOCK SIZE>\n"
+    "-o <WRITE BLOCK SIZE>\n"
+    "-h <HMAC BLOCK SIZE>\n"
+    "-a <ARCHIVE BLOCK SIZE>\n"
     "-w\n"
     "-v";
 
