@@ -31,7 +31,6 @@ static PyObject* write(PyObject* self, PyObject* args) {
         )) {
         return NULL;
     }
-    printf("%s\n%s\n", path, dev);
     try {
         TBCLI::App app;
         app.set_block_size_read(block_size_read);
