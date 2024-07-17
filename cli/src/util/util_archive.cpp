@@ -19,7 +19,7 @@ TBCLI::Util::Archiver::Archiver(char *path, size_t block_size, bool verbose) {
     this->entry = NULL;
     this->archive = archive_write_new();
     archive_write_add_filter_none(this->archive);
-    archive_write_set_format_ustar(this->archive);
+    archive_write_set_format_gnutar(this->archive);
     if (archive_write_open_filename(this->archive, oss.str().c_str())) {
         throw Err::OPEN;
     }
