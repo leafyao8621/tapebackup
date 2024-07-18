@@ -1,8 +1,9 @@
-from ._wrapper import write, read, check
+from ._wrapper import write, read, check, report_daily
 
 __all__ =\
     [
         "write",
         "read",
-        "check"
+        "check",
+        "report_daily"
     ]

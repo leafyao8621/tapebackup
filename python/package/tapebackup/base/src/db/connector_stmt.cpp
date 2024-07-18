@@ -360,3 +360,36 @@ void TBCLI::Connector::set_written_size(char *signature, size_t size) const {
         throw Err::STMT_EXECUTION;
     }
 }
+
+void TBCLI::Connector::report_daily(
+    std::string beginning,
+    std::string ending,
+    Report::Format format,
+    std::ostream &os) const {
+    int ret =
+        sqlite3_bind_text(
+            this->stmt_report_daily,
+            1,
+            beginning.c_str(),
+            beginning.size(),
+            0
+        );
+    if (ret) {
+        this->print_err();
+        throw Err::STMT_BIND;
+    }
+    ret =
+        sqlite3_bind_text(
+            this->stmt_report_daily,
+            2,
+            ending.c_str(),
+            ending.size(),
+            0
+        );
+    if (ret) {
+        this->print_err();
+        throw Err::STMT_BIND;
+    }
+    ReportDaily report(beginning, ending);
+    report(this->stmt_report_daily, format, os);
+}

@@ -86,3 +86,23 @@ def check(
         block_size_hmac,
         block_size_archive
     )
+
+def report_daily(
+    beginning: str="1900-01-01",
+    ending: str="2100-01-01",
+    format: str="TEXT",
+    export_file_name: str | None=None):
+    """_summary_
+
+    Args:
+        beginning (str, optional): _description_. Defaults to "1900-01-01".
+        ending (str, optional): _description_. Defaults to "2100-01-01".
+        format (str, optional): _description_. Defaults to "TEXT".
+        export_file_name (str | None, optional): _description_. Defaults to None.
+    """
+    tapebackup._base.report_daily(
+        beginning,
+        ending,
+        format,
+        export_file_name
+    )

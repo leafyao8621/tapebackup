@@ -9,6 +9,7 @@ base =\
             "tapebackup/base/src/app/app_check.cpp",
             "tapebackup/base/src/app/app_read.cpp",
             "tapebackup/base/src/app/app_write.cpp",
+            "tapebackup/base/src/app/app_report_daily.cpp",
             "tapebackup/base/src/db/connector.cpp",
             "tapebackup/base/src/db/connector_stmt.cpp",
             "tapebackup/base/src/util/util_archive.cpp",
@@ -20,6 +21,7 @@ base =\
             "tapebackup/base/src/util/util_hmac.cpp",
             "tapebackup/base/src/util/util_reader.cpp",
             "tapebackup/base/src/util/util_writer.cpp",
+            "tapebackup/base/src/report/report_daily.cpp",
         ],
         libraries=["archive", "sqlite3", "crypto"]
     )

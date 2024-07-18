@@ -1,4 +1,7 @@
 #include <Python.h>
+#include <string>
+#include <iostream>
+#include <fstream>
 
 #include "app/app.h"
 
@@ -155,6 +158,12 @@ static PyObject* write(PyObject* self, PyObject* args) {
             break;
         case TBCLI::Util::Writer::Err::WRITE:
             PyErr_SetString(PyExc_RuntimeError, "WRITER WRITE");
+            break;
+        }
+    } catch (TBCLI::Report::Err err) {
+        switch (err) {
+        case TBCLI::Report::Err::STMT_EXECUTION:
+            PyErr_SetString(PyExc_RuntimeError, "REPORT STMT_EXECUTION");
             break;
         }
     }
@@ -455,6 +464,174 @@ static PyObject* check(PyObject* self, PyObject* args) {
             PyErr_SetString(PyExc_RuntimeError, "WRITER WRITE");
             break;
         }
+    } catch (TBCLI::Report::Err err) {
+        switch (err) {
+        case TBCLI::Report::Err::STMT_EXECUTION:
+            PyErr_SetString(PyExc_RuntimeError, "REPORT STMT_EXECUTION");
+            break;
+        }
+    }
+    Py_RETURN_NONE;
+}
+
+static PyObject* report_daily(PyObject* self, PyObject* args) {
+    const char *beginning;
+    const char *ending;
+    const char *format;
+    const char *export_file_name;
+    if (
+        !PyArg_ParseTuple(
+            args,
+            "sssz",
+            &beginning,
+            &ending,
+            &format,
+            &export_file_name
+        )) {
+        return NULL;
+    }
+    try {
+        TBCLI::App app;
+        TBCLI::Report::Format format_enum = TBCLI::Report::Format::TEXT;
+        if (!strcmp(format, "CSV")) {
+            format_enum = TBCLI::Report::Format::CSV;
+        }
+        if (export_file_name) {
+            std::ofstream ofs(export_file_name);
+            app.report_daily(
+                std::string(beginning),
+                std::string(ending),
+                format_enum,
+                ofs
+            );
+        } else {
+            app.report_daily(
+                std::string(beginning),
+                std::string(ending),
+                format_enum,
+                std::cout
+            );
+        }
+    } catch (TBCLI::App::Err err) {
+        switch (err) {
+        case TBCLI::App::Err::WRITE_PROTECT_TAMPERED:
+            PyErr_SetString(PyExc_RuntimeError, "APP WRITE_PROTECT_TAMPERED");
+            break;
+        case TBCLI::App::Err::WRITE_PROTECTED:
+            PyErr_SetString(PyExc_RuntimeError, "APP WRITE_PROTECTED");
+            break;
+        case TBCLI::App::Err::WRITE:
+            PyErr_SetString(PyExc_RuntimeError, "APP WRITE");
+            break;
+        case TBCLI::App::Err::INVALID_SIGNATURE:
+            PyErr_SetString(PyExc_RuntimeError, "APP INVALID_SIGNATURE");
+            break;
+        case TBCLI::App::Err::READ:
+            PyErr_SetString(PyExc_RuntimeError, "APP READ");
+            break;
+        case TBCLI::App::Err::FILE_TAMPERED:
+            PyErr_SetString(PyExc_RuntimeError, "APP FILE_TAMPERED");
+            break;
+        }
+    } catch (TBCLI::Connector::Err err) {
+        switch (err) {
+        case TBCLI::Connector::Err::CONNECTION:
+            PyErr_SetString(PyExc_RuntimeError, "CONNECTOR CONNECTION");
+            break;
+        case TBCLI::Connector::Err::STMT_CREATION:
+            PyErr_SetString(PyExc_RuntimeError, "CONNECTOR STMT_CREATION");
+            break;
+        case TBCLI::Connector::Err::STMT_EXECUTION:
+            PyErr_SetString(PyExc_RuntimeError, "CONNECTOR STMT_EXECUTION");
+            break;
+        case TBCLI::Connector::Err::STMT_BIND:
+            PyErr_SetString(PyExc_RuntimeError, "CONNECTOR STMT_BIND");
+            break;
+        }
+    } catch (TBCLI::Util::Err err) {
+        switch (err) {
+        case TBCLI::Util::Err::INVALID_DIR:
+            PyErr_SetString(PyExc_RuntimeError, "UTIL INVALID_DIR");
+            break;
+        case TBCLI::Util::Err::DEVICE_OPEN:
+            PyErr_SetString(PyExc_RuntimeError, "UTIL DEVICE_OPEN");
+            break;
+        case TBCLI::Util::Err::DEVICE_WRITE:
+            PyErr_SetString(PyExc_RuntimeError, "UTIL DEVICE_WRITE");
+            break;
+        case TBCLI::Util::Err::DIRECTORY_LISTING:
+            PyErr_SetString(PyExc_RuntimeError, "UTIL DIRECTORY_LISTING");
+            break;
+        case TBCLI::Util::Err::DIRECTORY_COMPRESSION:
+            PyErr_SetString(PyExc_RuntimeError, "UTIL DIRECTORY_COMPRESSION");
+            break;
+        case TBCLI::Util::Err::ARCHIVE_WRITE:
+            PyErr_SetString(PyExc_RuntimeError, "UTIL ARCHIVE_WRITE");
+            break;
+        case TBCLI::Util::Err::ARCHIVE_READ:
+            PyErr_SetString(PyExc_RuntimeError, "UTIL ARCHIVE_READ");
+            break;
+        case TBCLI::Util::Err::READONLY_FLAG:
+            PyErr_SetString(PyExc_RuntimeError, "UTIL READONLY_FLAG");
+            break;
+        }
+    } catch (TBCLI::Util::Env::Err err) {
+        switch (err) {
+        case TBCLI::Util::Env::Err::DIRECTORY_CREATION:
+            PyErr_SetString(PyExc_RuntimeError, "ENV DIRECTORY_CREATION");
+            break;
+        }
+    } catch (TBCLI::Util::Gen::Err err) {
+        switch (err) {
+        case TBCLI::Util::Gen::Err::OPEN:
+            PyErr_SetString(PyExc_RuntimeError, "GEN OPEN");
+            break;
+        case TBCLI::Util::Gen::Err::READ:
+            PyErr_SetString(PyExc_RuntimeError, "GEN READ");
+            break;
+        }
+    } catch (TBCLI::Util::Archiver::Err err) {
+        switch (err) {
+        case TBCLI::Util::Archiver::Err::OPEN:
+            PyErr_SetString(PyExc_RuntimeError, "ARCHIVER OPEN");
+            break;
+        case TBCLI::Util::Archiver::Err::APPEND:
+            PyErr_SetString(PyExc_RuntimeError, "ARCHIVER APPEND");
+            break;
+        }
+    } catch (TBCLI::Util::HMAC::Err err) {
+        switch (err) {
+        case TBCLI::Util::HMAC::Err::CREATION:
+            PyErr_SetString(PyExc_RuntimeError, "HMAC CREATION");
+            break;
+        case TBCLI::Util::HMAC::Err::INITIALIZATION:
+            PyErr_SetString(PyExc_RuntimeError, "HMAC INITIALIZATION");
+            break;
+        case TBCLI::Util::HMAC::Err::UPDATE:
+            PyErr_SetString(PyExc_RuntimeError, "HMAC UPDATE");
+            break;
+        case TBCLI::Util::HMAC::Err::FINALIZATION:
+            PyErr_SetString(PyExc_RuntimeError, "HMAC FINALIZATION");
+            break;
+        }
+    } catch (TBCLI::Util::Writer::Err err) {
+        switch (err) {
+        case TBCLI::Util::Writer::Err::OPEN:
+            PyErr_SetString(PyExc_RuntimeError, "WRITER OPEN");
+            break;
+        case TBCLI::Util::Writer::Err::READ:
+            PyErr_SetString(PyExc_RuntimeError, "WRITER READ");
+            break;
+        case TBCLI::Util::Writer::Err::WRITE:
+            PyErr_SetString(PyExc_RuntimeError, "WRITER WRITE");
+            break;
+        }
+    } catch (TBCLI::Report::Err err) {
+        switch (err) {
+        case TBCLI::Report::Err::STMT_EXECUTION:
+            PyErr_SetString(PyExc_RuntimeError, "REPORT STMT_EXECUTION");
+            break;
+        }
     }
     Py_RETURN_NONE;
 }
@@ -463,6 +640,7 @@ static PyMethodDef _base_methods[] = {
     {"write", (PyCFunction)write, METH_VARARGS, NULL},
     {"read", (PyCFunction)read, METH_VARARGS, NULL},
     {"check", (PyCFunction)check, METH_VARARGS, NULL},
+    {"report_daily", (PyCFunction)report_daily, METH_VARARGS, NULL},
     {0}
 };
 
