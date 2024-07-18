@@ -1,4 +1,5 @@
 #include <iostream>
+#include <fstream>
 #include <cstring>
 
 #include <unistd.h>
@@ -8,7 +9,7 @@
 const static char *msg =
     "Usage: tbcli [OPTIONS] <MODE> <DEVICE>\n"
     "Arguments:\n"
-    "<MODE>    [possible values: read, write]\n"
+    "<MODE>    [possible values: read, write, report]\n"
     "<DEVICE>\n\n"
     "Options:\n"
     "-p <PATH>\n"
@@ -16,6 +17,10 @@ const static char *msg =
     "-o <WRITE BLOCK SIZE>\n"
     "-h <HMAC BLOCK SIZE>\n"
     "-a <ARCHIVE BLOCK SIZE>\n"
+    "-b <BEGINNING DATE>\n"
+    "-e <ENDING DATE>\n"
+    "-f <FORMAT>\n"
+    "-x <EXPORT FILE NAME>\n"
     "-w\n"
     "-v";
 
@@ -26,16 +31,25 @@ int main(int argc, char **argv) {
     bool write_set = false;
     bool hmac_set = false;
     bool archive_set = false;
+    bool beginning_set = false;
+    bool ending_set = false;
+    bool format_set = false;
+    bool export_file_name_set = false;
     size_t block_size_read = 0;
     size_t block_size_write = 0;
     size_t block_size_hmac = 0;
     size_t block_size_archive = 0;
     std::string path = "";
+    std::string beginning = "";
+    std::string ending = "";
+    std::string format = "";
+    std::string export_file_name = "";
     bool write_protect = false;
     bool read = false;
     bool write = false;
+    bool report = false;
     bool verbose = false;
-    for (; (ret = getopt(argc, argv, "p:i:o:h:a:wv")) != -1;) {
+    for (; (ret = getopt(argc, argv, "p:i:o:h:a:b:e:f:x:wv")) != -1;) {
         switch (ret) {
         case 'p':
             path_set = true;
@@ -73,6 +87,22 @@ int main(int argc, char **argv) {
                 return -1;
             }
             break;
+        case 'b':
+            beginning_set = true;
+            beginning = optarg;
+            break;
+        case 'e':
+            ending_set = true;
+            ending = optarg;
+            break;
+        case 'f':
+            format_set = true;
+            format = optarg;
+            break;
+        case 'x':
+            export_file_name_set = true;
+            export_file_name = optarg;
+            break;
         case 'w':
             write_protect = true;
             break;
@@ -100,29 +130,33 @@ int main(int argc, char **argv) {
     if (!strcmp(argv[optind], "write")) {
         write = true;
     }
-    if (!read && !write) {
+    if (!strcmp(argv[optind], "report")) {
+        report = true;
+    }
+    if (!read && !write && !report) {
         std::cerr << msg << std::endl;
         return -1;
     } else if (write && !path_set) {
         std::cerr << msg << std::endl;
         return -1;
     }
-    std::string dev = argv[optind + 1];
+
     try {
         TBCLI::App app;
-        if (read_set) {
-            app.set_block_size_read(block_size_read);
-        }
-        if (write_set) {
-            app.set_block_size_write(block_size_write);
-        }
-        if (hmac_set) {
-            app.set_block_size_hmac(block_size_hmac);
-        }
-        if (archive_set) {
-            app.set_block_size_archive(block_size_archive);
-        }
         if (write) {
+            std::string dev = argv[optind + 1];
+            if (read_set) {
+                app.set_block_size_read(block_size_read);
+            }
+            if (write_set) {
+                app.set_block_size_write(block_size_write);
+            }
+            if (hmac_set) {
+                app.set_block_size_hmac(block_size_hmac);
+            }
+            if (archive_set) {
+                app.set_block_size_archive(block_size_archive);
+            }
             app.write(
                 (char*)dev.c_str(),
                 (char*)path.c_str(),
@@ -131,6 +165,19 @@ int main(int argc, char **argv) {
             );
         }
         if (read) {
+            std::string dev = argv[optind + 1];
+            if (read_set) {
+                app.set_block_size_read(block_size_read);
+            }
+            if (write_set) {
+                app.set_block_size_write(block_size_write);
+            }
+            if (hmac_set) {
+                app.set_block_size_hmac(block_size_hmac);
+            }
+            if (archive_set) {
+                app.set_block_size_archive(block_size_archive);
+            }
             if (path_set) {
                 app.read(
                     (char*)dev.c_str(),
@@ -142,6 +189,28 @@ int main(int argc, char **argv) {
                     (char*)dev.c_str(),
                     verbose
                 );
+            }
+        }
+        if (report) {
+            if (!strcmp(argv[optind + 1], "daily")) {
+                if (!beginning_set) {
+                    beginning = "1900-01-01";
+                }
+                if (!ending_set) {
+                    ending = "2100-01-01";
+                }
+                TBCLI::Report::Format format_enum = TBCLI::Report::Format::TEXT;
+                if (format_set) {
+                    if (!strcmp(format.c_str(), "CSV")) {
+                        format_enum = TBCLI::Report::Format::CSV;
+                    }
+                }
+                if (export_file_name_set) {
+                    std::ofstream ofs(export_file_name);
+                    app.report_daily(beginning, ending, format_enum, ofs);
+                } else {
+                    app.report_daily(beginning, ending, format_enum, std::cout);
+                }
             }
         }
     } catch (TBCLI::App::Err err) {
@@ -263,6 +332,13 @@ int main(int argc, char **argv) {
             break;
         case TBCLI::Util::Writer::Err::WRITE:
             std::cerr << "WRITER WRITE" << std::endl;
+            break;
+        }
+        return 7;
+    } catch (TBCLI::Report::Err err) {
+        switch (err) {
+        case TBCLI::Report::Err::STMT_EXECUTION:
+            std::cerr << "REPORT STMT_EXECUTION" << std::endl;
             break;
         }
         return 7;

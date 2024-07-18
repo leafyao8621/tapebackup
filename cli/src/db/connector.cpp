@@ -211,6 +211,26 @@ TBCLI::Connector::Connector() {
         this->print_err();
         throw Err::STMT_CREATION;
     }
+    ret =
+        sqlite3_prepare_v2(
+            this->conn,
+            "SELECT "
+            "DATE(DATETIME(COMPLETION_TIME, 'unixepoch')), "
+            "SUM(REPORTED_SIZE), "
+            "SUM(WRITTEN_SIZE) "
+            "FROM MAIN "
+            "WHERE "
+            "DATETIME(COMPLETION_TIME, 'unixepoch') >= DATETIME(?) AND "
+            "DATETIME(COMPLETION_TIME, 'unixepoch') <= DATETIME(?)"
+            "GROUP BY DATE(DATETIME(COMPLETION_TIME, 'unixepoch'))",
+            -1,
+            &this->stmt_report_daily,
+            NULL
+        );
+    if (ret) {
+        this->print_err();
+        throw Err::STMT_CREATION;
+    }
 }
 
 TBCLI::Connector::~Connector() {
@@ -229,9 +249,10 @@ TBCLI::Connector::~Connector() {
     sqlite3_finalize(this->stmt_set_completion_time);
     sqlite3_finalize(this->stmt_set_reported_size);
     sqlite3_finalize(this->stmt_set_written_size);
+    sqlite3_finalize(this->stmt_report_daily);
     sqlite3_close(this->conn);
 }
 
 void TBCLI::Connector::print_err() const {
-    std::cout << sqlite3_errmsg(this->conn) << std::endl;
+    std::cerr << sqlite3_errmsg(this->conn) << std::endl;
 }

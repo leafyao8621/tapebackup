@@ -4,6 +4,7 @@
 #include <thread>
 
 #include "../db/connector.h"
+#include "../report/report.h"
 #include "../util/util.h"
 
 namespace TBCLI {
@@ -39,6 +40,11 @@ namespace TBCLI {
         void write(char *dev, char *path, bool write_protect, bool verbose);
         void read(char *dev, char *path, bool verbose);
         void read(char *dev, bool verbose);
+        void report_daily(
+            std::string beginning,
+            std::string ending,
+            Report::Format format,
+            std::ostream &os);
     };
 }
 

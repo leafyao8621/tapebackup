@@ -2,7 +2,10 @@
 #define DB_CONNECTOR_H_
 
 #include <string>
+
 #include <sqlite3.h>
+
+#include "../report/report.h"
 
 namespace TBCLI {
     class Connector {
@@ -22,6 +25,7 @@ namespace TBCLI {
         sqlite3_stmt *stmt_set_completion_time;
         sqlite3_stmt *stmt_set_reported_size;
         sqlite3_stmt *stmt_set_written_size;
+        sqlite3_stmt *stmt_report_daily;
         void print_err() const;
     public:
         enum Err {
@@ -46,6 +50,11 @@ namespace TBCLI {
         void set_completion_time(char *signature) const;
         void set_reported_size(char *signature, size_t size) const;
         void set_written_size(char *signature, size_t size) const;
+        void report_daily(
+            std::string beginning,
+            std::string ending,
+            Report::Format format,
+            std::ostream &os) const;
     };
 }
 
