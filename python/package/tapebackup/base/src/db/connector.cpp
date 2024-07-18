@@ -19,7 +19,11 @@ TBCLI::Connector::Connector() {
             "WRITE_PROTECTION INTEGER,"
             "HMAC_KEY BLOB(64),"
             "FILE_NAME TEXT,"
-            "HMAC_VALUE BLOB(64)"
+            "HMAC_VALUE BLOB(64),"
+            "START_TIME TIMESTAMP,"
+            "COMPLETION_TIME TIMESTAMP,"
+            "REPORTED_SIZE INTEGER,"
+            "WRITTEN_SIZE INTEGER"
             ")",
             -1,
             &this->stmt_init,
@@ -61,7 +65,8 @@ TBCLI::Connector::Connector() {
     ret =
         sqlite3_prepare_v2(
             this->conn,
-            "INSERT INTO MAIN VALUES (?, ?, NULL, NULL, NULL)",
+            "INSERT INTO MAIN VALUES "
+            "(?, ?, NULL, NULL, NULL, NULL, NULL, NULL, NULL)",
             -1,
             &this->stmt_add,
             NULL
@@ -158,6 +163,54 @@ TBCLI::Connector::Connector() {
         this->print_err();
         throw Err::STMT_CREATION;
     }
+    ret =
+        sqlite3_prepare_v2(
+            this->conn,
+            "UPDATE MAIN SET START_TIME = ? WHERE SIGNATURE = ?",
+            -1,
+            &this->stmt_set_start_time,
+            NULL
+        );
+    if (ret) {
+        this->print_err();
+        throw Err::STMT_CREATION;
+    }
+    ret =
+        sqlite3_prepare_v2(
+            this->conn,
+            "UPDATE MAIN SET COMPLETION_TIME = ? WHERE SIGNATURE = ?",
+            -1,
+            &this->stmt_set_completion_time,
+            NULL
+        );
+    if (ret) {
+        this->print_err();
+        throw Err::STMT_CREATION;
+    }
+    ret =
+        sqlite3_prepare_v2(
+            this->conn,
+            "UPDATE MAIN SET REPORTED_SIZE = ? WHERE SIGNATURE = ?",
+            -1,
+            &this->stmt_set_reported_size,
+            NULL
+        );
+    if (ret) {
+        this->print_err();
+        throw Err::STMT_CREATION;
+    }
+    ret =
+        sqlite3_prepare_v2(
+            this->conn,
+            "UPDATE MAIN SET WRITTEN_SIZE = ? WHERE SIGNATURE = ?",
+            -1,
+            &this->stmt_set_written_size,
+            NULL
+        );
+    if (ret) {
+        this->print_err();
+        throw Err::STMT_CREATION;
+    }
 }
 
 TBCLI::Connector::~Connector() {
@@ -172,6 +225,10 @@ TBCLI::Connector::~Connector() {
     sqlite3_finalize(this->stmt_get_key);
     sqlite3_finalize(this->stmt_get_hmac);
     sqlite3_finalize(this->stmt_get_file_name);
+    sqlite3_finalize(this->stmt_set_start_time);
+    sqlite3_finalize(this->stmt_set_completion_time);
+    sqlite3_finalize(this->stmt_set_reported_size);
+    sqlite3_finalize(this->stmt_set_written_size);
     sqlite3_close(this->conn);
 }
 

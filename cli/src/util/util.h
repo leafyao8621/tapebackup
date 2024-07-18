@@ -96,7 +96,7 @@ namespace TBCLI {
             };
             Writer(size_t block_size);
             ~Writer();
-            void operator()(
+            size_t operator()(
                 char *path, char *dev, bool verbose, std::mutex &mutex);
         };
         class Reader {

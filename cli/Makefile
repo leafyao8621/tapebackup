@@ -15,6 +15,6 @@ clean:
 	@rm $(OBJ)
 	@rm $(BIN)
 valgrind: $(BIN)
-	@valgrind -s --leak-check=full --show-leak-kinds=all ./$(BIN) -p ~/test/ write ~/dummy.img
-	@valgrind -s --leak-check=full --show-leak-kinds=all ./$(BIN) -p . read ~/dummy.img
-	@valgrind -s --leak-check=full --show-leak-kinds=all ./$(BIN) read ~/dummy.img
+	@valgrind -s --leak-check=full --show-leak-kinds=all ./$(BIN) -p ~/test/ -v write ~/dummy.img
+	@valgrind -s --leak-check=full --show-leak-kinds=all ./$(BIN) -p . -v read ~/dummy.img
+	@valgrind -s --leak-check=full --show-leak-kinds=all ./$(BIN) -v read ~/dummy.img

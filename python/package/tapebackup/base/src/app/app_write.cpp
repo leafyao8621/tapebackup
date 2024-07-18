@@ -1,6 +1,8 @@
 #include <iostream>
 #include <sstream>
 
+#include <sys/stat.h>
+
 #include "app.h"
 
 void TBCLI::App::write(
@@ -39,15 +41,23 @@ void TBCLI::App::write(
         Util::init_dev(dev, this->signature, write_protect);
         this->conn.add(this->signature, write_protect);
     }
+    this->conn.set_start_time(this->signature);
     this->conn.update_file_name(this->signature, path);
     {
         Util::Archiver archiver(path, this->block_size_archive, verbose);
         archiver();
     }
     bool failure = false;
+    size_t written_size = 0;
     std::ostringstream oss;
     oss << getenv("HOME") << "/backup/backup.tar";
     std::string archive_path = oss.str();
+    struct stat st;
+    stat(archive_path.c_str(), &st);
+    this->conn.set_reported_size(this->signature, st.st_size);
+    if (verbose) {
+        std::cout << "Reported size " << st.st_size << std::endl;
+    }
     this->gen(this->hmac_key);
     if (verbose) {
         Util::get_hex(this->hmac_key, this->buf);
@@ -62,10 +72,11 @@ void TBCLI::App::write(
                 char *dev,
                 bool verbose,
                 std::mutex &mutex,
-                bool &failure) {
+                bool &failure,
+                size_t &written_size) {
                 try {
                     Util::Writer writer(block_size);
-                    writer(path, dev, verbose, mutex);
+                    written_size = writer(path, dev, verbose, mutex);
                 } catch (Util::Writer::Err) {
                     failure = true;
                 }
@@ -75,7 +86,8 @@ void TBCLI::App::write(
             dev,
             verbose,
             std::ref(this->mutex),
-            std::ref(failure)
+            std::ref(failure),
+            std::ref(written_size)
         );
     Util::HMAC hmac(this->block_size_hmac);
     hmac(
@@ -92,6 +104,15 @@ void TBCLI::App::write(
     }
     this->conn.update_hmac(this->signature, this->hmac_md);
     if (verbose) {
+        Util::get_hex(this->hmac_md, this->buf);
+        std::cout << "HMAC Value " << this->buf << std::endl;
+    }
+    this->conn.set_written_size(this->signature, written_size);
+    if (verbose) {
+        std::cout << "Written size " << written_size << std::endl;
+    }
+    if (verbose) {
         std::cout << "Write operation completed" << std::endl;
     }
+    this->conn.set_completion_time(this->signature);
 }

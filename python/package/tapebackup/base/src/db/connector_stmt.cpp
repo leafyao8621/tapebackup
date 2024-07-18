@@ -1,4 +1,5 @@
 #include <cstring>
+#include <ctime>
 
 #include "connector.h"
 
@@ -256,4 +257,106 @@ std::string TBCLI::Connector::get_file_name(char *signature) const {
         throw Err::STMT_EXECUTION;
     }
     return fn;
+}
+
+void TBCLI::Connector::set_start_time(char *signature) const {
+    time_t cur_time = time(NULL);
+    int ret =
+        sqlite3_bind_int64(this->stmt_set_start_time, 1, cur_time);
+    if (ret) {
+        this->print_err();
+        throw Err::STMT_BIND;
+    }
+    ret =
+        sqlite3_bind_blob(this->stmt_set_start_time, 2, signature, 64, 0);
+    if (ret) {
+        this->print_err();
+        throw Err::STMT_BIND;
+    }
+    ret = sqlite3_step(this->stmt_set_start_time);
+    if (ret != SQLITE_DONE) {
+        this->print_err();
+        throw Err::STMT_EXECUTION;
+    }
+    ret = sqlite3_reset(this->stmt_set_start_time);
+    if (ret) {
+        this->print_err();
+        throw Err::STMT_EXECUTION;
+    }
+}
+
+void TBCLI::Connector::set_completion_time(char *signature) const {
+    time_t cur_time = time(NULL);
+    int ret =
+        sqlite3_bind_int64(this->stmt_set_completion_time, 1, cur_time);
+    if (ret) {
+        this->print_err();
+        throw Err::STMT_BIND;
+    }
+    ret =
+        sqlite3_bind_blob(this->stmt_set_completion_time, 2, signature, 64, 0);
+    if (ret) {
+        this->print_err();
+        throw Err::STMT_BIND;
+    }
+    ret = sqlite3_step(this->stmt_set_completion_time);
+    if (ret != SQLITE_DONE) {
+        this->print_err();
+        throw Err::STMT_EXECUTION;
+    }
+    ret = sqlite3_reset(this->stmt_set_completion_time);
+    if (ret) {
+        this->print_err();
+        throw Err::STMT_EXECUTION;
+    }
+}
+
+void TBCLI::Connector::set_reported_size(char *signature, size_t size) const {
+    int ret =
+        sqlite3_bind_int64(this->stmt_set_reported_size, 1, size);
+    if (ret) {
+        this->print_err();
+        throw Err::STMT_BIND;
+    }
+    ret =
+        sqlite3_bind_blob(this->stmt_set_reported_size, 2, signature, 64, 0);
+    if (ret) {
+        this->print_err();
+        throw Err::STMT_BIND;
+    }
+    ret = sqlite3_step(this->stmt_set_reported_size);
+    if (ret != SQLITE_DONE) {
+        this->print_err();
+        throw Err::STMT_EXECUTION;
+    }
+    ret = sqlite3_reset(this->stmt_set_reported_size);
+    if (ret) {
+        this->print_err();
+        throw Err::STMT_EXECUTION;
+    }
+}
+
+void TBCLI::Connector::set_written_size(char *signature, size_t size) const {
+    int ret =
+        sqlite3_bind_int64(this->stmt_set_written_size, 1, size);
+    if (ret) {
+        this->print_err();
+        throw Err::STMT_BIND;
+    }
+    ret =
+        sqlite3_bind_blob(this->stmt_set_written_size, 2, signature, 64, 0);
+    if (ret) {
+        this->print_err();
+        throw Err::STMT_BIND;
+    }
+    ret = sqlite3_step(this->stmt_set_written_size);
+    if (ret != SQLITE_DONE) {
+        this->print_err();
+        throw Err::STMT_EXECUTION;
+    }
+    ret = sqlite3_reset(this->stmt_set_written_size);
+    if (ret) {
+        this->print_err();
+        throw Err::STMT_EXECUTION;
+    }
 }
