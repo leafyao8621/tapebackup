@@ -22,8 +22,9 @@ TBCLI::Util::Writer::~Writer() {
     }
 }
 
-void TBCLI::Util::Writer::operator()(
+size_t TBCLI::Util::Writer::operator()(
     char *path, char *dev, bool verbose, std::mutex &mutex) {
+    size_t out = 0;
     this->fd_in = open(path, O_RDONLY);
     if (fd_in == -1) {
         throw Err::OPEN;
@@ -55,5 +56,7 @@ void TBCLI::Util::Writer::operator()(
         if (bytes_written == -1) {
             throw Err::WRITE;
         }
+        out += bytes_written;
     }
+    return out;
 }
