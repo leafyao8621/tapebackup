@@ -106,3 +106,40 @@ def report_daily(
         format,
         export_file_name
     )
+
+def report_list(
+    beginning: str="1900-01-01",
+    ending: str="2100-01-01",
+    format: str="TEXT",
+    export_file_name: str | None=None):
+    """_summary_
+
+    Args:
+        beginning (str, optional): _description_. Defaults to "1900-01-01".
+        ending (str, optional): _description_. Defaults to "2100-01-01".
+        format (str, optional): _description_. Defaults to "TEXT".
+        export_file_name (str | None, optional): _description_. Defaults to None.
+    """
+    tapebackup._base.report_list(
+        beginning,
+        ending,
+        format,
+        export_file_name
+    )
+
+def report_lookup(
+    path: str,
+    format: str="TEXT",
+    export_file_name: str | None=None):
+    """_summary_
+
+    Args:
+        path (str): _description_
+        format (str, optional): _description_. Defaults to "TEXT".
+        export_file_name (str | None, optional): _description_. Defaults to None.
+    """
+    tapebackup._base.report_lookup(
+        path,
+        format,
+        export_file_name
+    )
