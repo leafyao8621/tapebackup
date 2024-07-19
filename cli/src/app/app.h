@@ -45,6 +45,15 @@ namespace TBCLI {
             std::string ending,
             Report::Format format,
             std::ostream &os);
+        void report_list(
+            std::string beginning,
+            std::string ending,
+            Report::Format format,
+            std::ostream &os);
+        void report_lookup(
+            std::string path,
+            Report::Format format,
+            std::ostream &os);
     };
 }
 

@@ -1,10 +1,5 @@
 #include "report.h"
 
-TBCLI::ReportDaily::ReportDaily(std::string beginning, std::string ending) {
-    this->beginning = beginning;
-    this->ending = ending;
-}
-
 void TBCLI::ReportDaily::report_text(sqlite3_stmt *stmt, std::ostream &os) {
     int ret = 0;
     for (;;) {

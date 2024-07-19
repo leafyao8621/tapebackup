@@ -7,10 +7,10 @@
 #include "app/app.h"
 
 const static char *msg =
-    "Usage: tbcli [OPTIONS] <MODE> <DEVICE>\n"
+    "Usage: tbcli [OPTIONS] <MODE> <DEVICE/REPORT>\n"
     "Arguments:\n"
     "<MODE>    [possible values: read, write, report]\n"
-    "<DEVICE>\n\n"
+    "<DEVICE/REPORT> [possible values for report: daily, list, lookup]\n\n"
     "Options:\n"
     "-p <PATH>\n"
     "-i <READ BLOCK SIZE>\n"
@@ -19,7 +19,7 @@ const static char *msg =
     "-a <ARCHIVE BLOCK SIZE>\n"
     "-b <BEGINNING DATE>\n"
     "-e <ENDING DATE>\n"
-    "-f <FORMAT>\n"
+    "-f <FORMAT> [possible values: TEXT, CSV]\n"
     "-x <EXPORT FILE NAME>\n"
     "-w\n"
     "-v";
@@ -210,6 +210,44 @@ int main(int argc, char **argv) {
                     app.report_daily(beginning, ending, format_enum, ofs);
                 } else {
                     app.report_daily(beginning, ending, format_enum, std::cout);
+                }
+            }
+            if (!strcmp(argv[optind + 1], "list")) {
+                if (!beginning_set) {
+                    beginning = "1900-01-01";
+                }
+                if (!ending_set) {
+                    ending = "2100-01-01";
+                }
+                TBCLI::Report::Format format_enum = TBCLI::Report::Format::TEXT;
+                if (format_set) {
+                    if (!strcmp(format.c_str(), "CSV")) {
+                        format_enum = TBCLI::Report::Format::CSV;
+                    }
+                }
+                if (export_file_name_set) {
+                    std::ofstream ofs(export_file_name);
+                    app.report_list(beginning, ending, format_enum, ofs);
+                } else {
+                    app.report_list(beginning, ending, format_enum, std::cout);
+                }
+            }
+            if (!strcmp(argv[optind + 1], "lookup")) {
+                if (!path_set) {
+                    std::cerr << msg << std::endl;
+                    return -1;
+                }
+                TBCLI::Report::Format format_enum = TBCLI::Report::Format::TEXT;
+                if (format_set) {
+                    if (!strcmp(format.c_str(), "CSV")) {
+                        format_enum = TBCLI::Report::Format::CSV;
+                    }
+                }
+                if (export_file_name_set) {
+                    std::ofstream ofs(export_file_name);
+                    app.report_lookup(path, format_enum, ofs);
+                } else {
+                    app.report_lookup(path, format_enum, std::cout);
                 }
             }
         }

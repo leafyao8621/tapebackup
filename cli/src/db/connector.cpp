@@ -215,16 +215,69 @@ TBCLI::Connector::Connector() {
         sqlite3_prepare_v2(
             this->conn,
             "SELECT "
-            "DATE(DATETIME(COMPLETION_TIME, 'unixepoch')), "
-            "SUM(REPORTED_SIZE), "
-            "SUM(WRITTEN_SIZE) "
-            "FROM MAIN "
+            "    DATE(DATETIME(COMPLETION_TIME, 'unixepoch')), "
+            "    SUM(REPORTED_SIZE), "
+            "    SUM(WRITTEN_SIZE) "
+            "FROM "
+            "    MAIN "
             "WHERE "
-            "DATETIME(COMPLETION_TIME, 'unixepoch') >= DATETIME(?) AND "
-            "DATETIME(COMPLETION_TIME, 'unixepoch') <= DATETIME(?)"
-            "GROUP BY DATE(DATETIME(COMPLETION_TIME, 'unixepoch'))",
+            "    DATETIME(COMPLETION_TIME, 'unixepoch') >= DATETIME(?) AND "
+            "    DATETIME(COMPLETION_TIME, 'unixepoch') <= DATETIME(?)"
+            "GROUP BY "
+            "    DATE(DATETIME(COMPLETION_TIME, 'unixepoch'))",
             -1,
             &this->stmt_report_daily,
+            NULL
+        );
+    if (ret) {
+        this->print_err();
+        throw Err::STMT_CREATION;
+    }
+    ret =
+        sqlite3_prepare_v2(
+            this->conn,
+            "SELECT "
+            "    HEX(SIGNATURE), "
+            "    WRITE_PROTECTION, "
+            "    HEX(HMAC_KEY), "
+            "    FILE_NAME, "
+            "    HEX(HMAC_VALUE), "
+            "    DATETIME(START_TIME, 'unixepoch'), "
+            "    DATETIME(COMPLETION_TIME, 'unixepoch'), "
+            "    REPORTED_SIZE, "
+            "    WRITTEN_SIZE "
+            "FROM "
+            "    MAIN "
+            "WHERE "
+            "    DATETIME(COMPLETION_TIME, 'unixepoch') >= DATETIME(?) AND "
+            "    DATETIME(COMPLETION_TIME, 'unixepoch') <= DATETIME(?)",
+            -1,
+            &this->stmt_report_list,
+            NULL
+        );
+    if (ret) {
+        this->print_err();
+        throw Err::STMT_CREATION;
+    }
+    ret =
+        sqlite3_prepare_v2(
+            this->conn,
+            "SELECT "
+            "    HEX(SIGNATURE), "
+            "    WRITE_PROTECTION, "
+            "    HEX(HMAC_KEY), "
+            "    FILE_NAME, "
+            "    HEX(HMAC_VALUE), "
+            "    DATETIME(START_TIME, 'unixepoch'), "
+            "    DATETIME(COMPLETION_TIME, 'unixepoch'), "
+            "    REPORTED_SIZE, "
+            "    WRITTEN_SIZE "
+            "FROM "
+            "    MAIN "
+            "WHERE "
+            "    FILE_NAME LIKE '%' || ? || '%'",
+            -1,
+            &this->stmt_report_lookup,
             NULL
         );
     if (ret) {
@@ -250,6 +303,8 @@ TBCLI::Connector::~Connector() {
     sqlite3_finalize(this->stmt_set_reported_size);
     sqlite3_finalize(this->stmt_set_written_size);
     sqlite3_finalize(this->stmt_report_daily);
+    sqlite3_finalize(this->stmt_report_list);
+    sqlite3_finalize(this->stmt_report_lookup);
     sqlite3_close(this->conn);
 }
 

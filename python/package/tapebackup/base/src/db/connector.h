@@ -26,6 +26,8 @@ namespace TBCLI {
         sqlite3_stmt *stmt_set_reported_size;
         sqlite3_stmt *stmt_set_written_size;
         sqlite3_stmt *stmt_report_daily;
+        sqlite3_stmt *stmt_report_list;
+        sqlite3_stmt *stmt_report_lookup;
         void print_err() const;
     public:
         enum Err {
@@ -53,6 +55,15 @@ namespace TBCLI {
         void report_daily(
             std::string beginning,
             std::string ending,
+            Report::Format format,
+            std::ostream &os) const;
+        void report_list(
+            std::string beginning,
+            std::string ending,
+            Report::Format format,
+            std::ostream &os) const;
+        void report_lookup(
+            std::string path,
             Report::Format format,
             std::ostream &os) const;
     };

@@ -390,6 +390,59 @@ void TBCLI::Connector::report_daily(
         this->print_err();
         throw Err::STMT_BIND;
     }
-    ReportDaily report(beginning, ending);
+    ReportDaily report;
     report(this->stmt_report_daily, format, os);
+}
+
+void TBCLI::Connector::report_list(
+    std::string beginning,
+    std::string ending,
+    Report::Format format,
+    std::ostream &os) const {
+    int ret =
+        sqlite3_bind_text(
+            this->stmt_report_list,
+            1,
+            beginning.c_str(),
+            beginning.size(),
+            0
+        );
+    if (ret) {
+        this->print_err();
+        throw Err::STMT_BIND;
+    }
+    ret =
+        sqlite3_bind_text(
+            this->stmt_report_list,
+            2,
+            ending.c_str(),
+            ending.size(),
+            0
+        );
+    if (ret) {
+        this->print_err();
+        throw Err::STMT_BIND;
+    }
+    ReportList report;
+    report(this->stmt_report_list, format, os);
+}
+
+void TBCLI::Connector::report_lookup(
+    std::string path,
+    Report::Format format,
+    std::ostream &os) const {
+    int ret =
+        sqlite3_bind_text(
+            this->stmt_report_lookup,
+            1,
+            path.c_str(),
+            path.size(),
+            0
+        );
+    if (ret) {
+        this->print_err();
+        throw Err::STMT_BIND;
+    }
+    ReportLookup report;
+    report(this->stmt_report_lookup, format, os);
 }
