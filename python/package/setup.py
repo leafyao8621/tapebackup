@@ -12,6 +12,7 @@ base =\
             "tapebackup/base/src/app/app_report_daily.cpp",
             "tapebackup/base/src/app/app_report_list.cpp",
             "tapebackup/base/src/app/app_report_lookup.cpp",
+            "tapebackup/base/src/app/app_report_transaction.cpp",
             "tapebackup/base/src/db/connector.cpp",
             "tapebackup/base/src/db/connector_stmt.cpp",
             "tapebackup/base/src/util/util_archive.cpp",
@@ -26,6 +27,7 @@ base =\
             "tapebackup/base/src/report/report_daily.cpp",
             "tapebackup/base/src/report/report_list.cpp",
             "tapebackup/base/src/report/report_lookup.cpp",
+            "tapebackup/base/src/report/report_transaction.cpp",
         ],
         libraries=["archive", "sqlite3", "crypto"]
     )

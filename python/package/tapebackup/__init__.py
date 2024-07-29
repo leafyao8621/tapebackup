@@ -4,7 +4,8 @@ from ._wrapper import\
     check,\
     report_daily,\
     report_list,\
-    report_lookup
+    report_lookup,\
+    report_transaction
 
 __all__ =\
     [
@@ -13,5 +14,6 @@ __all__ =\
         "check",
         "report_daily",
         "report_list",
-        "report_lookup"
+        "report_lookup",
+        "report_transaction"
     ]

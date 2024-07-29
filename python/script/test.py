@@ -28,3 +28,12 @@ if __name__ == "__main__":
         "tes", export_file_name="lookup.txt")
     tapebackup.report_lookup(
         "tes", format="CSV", export_file_name="lookup.csv")
+    tapebackup.report_transaction("2024-07-01", "2024-08-01")
+    tapebackup.report_transaction("2024-07-01", "2024-08-01", format="CSV")
+    tapebackup.report_transaction(
+        "2024-07-01", "2024-08-01", export_file_name="transaction.txt")
+    tapebackup.report_transaction(
+        "2024-07-01",
+        "2024-08-01",
+        format="CSV",
+        export_file_name="transaction.csv")
