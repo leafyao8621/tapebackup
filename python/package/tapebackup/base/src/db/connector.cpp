@@ -41,6 +41,34 @@ TBCLI::Connector::Connector() {
     ret =
         sqlite3_prepare_v2(
             this->conn,
+            "CREATE TABLE IF NOT EXISTS OPERATION_LOG ("
+            "ID INTEGER PRIMARY KEY,"
+            "SIGNATURE BLOB(64),"
+            "WRITE_PROTECTION INTEGER,"
+            "HMAC_KEY BLOB(64),"
+            "FILE_NAME TEXT,"
+            "HMAC_VALUE BLOB(64),"
+            "START_TIME TIMESTAMP,"
+            "COMPLETION_TIME TIMESTAMP,"
+            "REPORTED_SIZE INTEGER,"
+            "WRITTEN_SIZE INTEGER"
+            ")",
+            -1,
+            &this->stmt_init_transaction,
+            NULL
+        );
+    if (ret) {
+        this->print_err();
+        throw Err::STMT_CREATION;
+    }
+    ret = sqlite3_step(this->stmt_init_transaction);
+    if (ret != SQLITE_DONE) {
+        this->print_err();
+        throw Err::STMT_EXECUTION;
+    }
+    ret =
+        sqlite3_prepare_v2(
+            this->conn,
             "SELECT COUNT(SIGNATURE) FROM MAIN WHERE SIGNATURE = ?",
             -1,
             &this->stmt_check,
@@ -214,6 +242,19 @@ TBCLI::Connector::Connector() {
     ret =
         sqlite3_prepare_v2(
             this->conn,
+            "INSERT INTO OPERATION_LOG VALUES "
+            "(NULL, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+            -1,
+            &this->stmt_add_transaction,
+            NULL
+        );
+    if (ret) {
+        this->print_err();
+        throw Err::STMT_CREATION;
+    }
+    ret =
+        sqlite3_prepare_v2(
+            this->conn,
             "SELECT "
             "    DATE(DATETIME(COMPLETION_TIME, 'unixepoch')), "
             "    SUM(REPORTED_SIZE), "
@@ -284,10 +325,38 @@ TBCLI::Connector::Connector() {
         this->print_err();
         throw Err::STMT_CREATION;
     }
+    ret =
+        sqlite3_prepare_v2(
+            this->conn,
+            "SELECT "
+            "    ID, "
+            "    HEX(SIGNATURE), "
+            "    WRITE_PROTECTION, "
+            "    HEX(HMAC_KEY), "
+            "    FILE_NAME, "
+            "    HEX(HMAC_VALUE), "
+            "    DATETIME(START_TIME, 'unixepoch'), "
+            "    DATETIME(COMPLETION_TIME, 'unixepoch'), "
+            "    REPORTED_SIZE, "
+            "    WRITTEN_SIZE "
+            "FROM "
+            "    OPERATION_LOG "
+            "WHERE "
+            "    DATETIME(COMPLETION_TIME, 'unixepoch') >= DATETIME(?) AND "
+            "    DATETIME(COMPLETION_TIME, 'unixepoch') <= DATETIME(?)",
+            -1,
+            &this->stmt_report_transaction,
+            NULL
+        );
+    if (ret) {
+        this->print_err();
+        throw Err::STMT_CREATION;
+    }
 }
 
 TBCLI::Connector::~Connector() {
     sqlite3_finalize(this->stmt_init);
+    sqlite3_finalize(this->stmt_init_transaction);
     sqlite3_finalize(this->stmt_check);
     sqlite3_finalize(this->stmt_get_write_protection);
     sqlite3_finalize(this->stmt_add);
@@ -302,9 +371,11 @@ TBCLI::Connector::~Connector() {
     sqlite3_finalize(this->stmt_set_completion_time);
     sqlite3_finalize(this->stmt_set_reported_size);
     sqlite3_finalize(this->stmt_set_written_size);
+    sqlite3_finalize(this->stmt_add_transaction);
     sqlite3_finalize(this->stmt_report_daily);
     sqlite3_finalize(this->stmt_report_list);
     sqlite3_finalize(this->stmt_report_lookup);
+    sqlite3_finalize(this->stmt_report_transaction);
     sqlite3_close(this->conn);
 }
 

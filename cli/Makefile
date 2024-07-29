@@ -30,3 +30,7 @@ valgrind: $(BIN)
 	@valgrind -s --leak-check=full --show-leak-kinds=all ./$(BIN) -p tes -f CSV report lookup
 	@valgrind -s --leak-check=full --show-leak-kinds=all ./$(BIN) -p tes -x lookup.txt report lookup
 	@valgrind -s --leak-check=full --show-leak-kinds=all ./$(BIN) -p tes -f CSV -x lookup.csv report lookup
+	@valgrind -s --leak-check=full --show-leak-kinds=all ./$(BIN) -b "2024-07-01" -e "2024-08-01" report transaction
+	@valgrind -s --leak-check=full --show-leak-kinds=all ./$(BIN) -b "2024-07-01" -e "2024-08-01" -f CSV report transaction
+	@valgrind -s --leak-check=full --show-leak-kinds=all ./$(BIN) -b "2024-07-01" -e "2024-08-01" -x transaction.txt report transaction
+	@valgrind -s --leak-check=full --show-leak-kinds=all ./$(BIN) -b "2024-07-01" -e "2024-08-01" -f CSV -x transaction.csv report transaction

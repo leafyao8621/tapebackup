@@ -41,7 +41,8 @@ void TBCLI::App::write(
         Util::init_dev(dev, this->signature, write_protect);
         this->conn.add(this->signature, write_protect);
     }
-    this->conn.set_start_time(this->signature);
+    time_t start_time = time(NULL);
+    this->conn.set_start_time(this->signature, start_time);
     this->conn.update_file_name(this->signature, path);
     {
         Util::Archiver archiver(path, this->block_size_archive, verbose);
@@ -114,5 +115,17 @@ void TBCLI::App::write(
     if (verbose) {
         std::cout << "Write operation completed" << std::endl;
     }
-    this->conn.set_completion_time(this->signature);
+    time_t completion_time = time(NULL);
+    this->conn.set_completion_time(this->signature, completion_time);
+    this->conn.add_transaction(
+        this->signature,
+        write_protect,
+        this->hmac_key,
+        path,
+        this->hmac_md,
+        start_time,
+        completion_time,
+        st.st_size,
+        written_size
+    );
 }

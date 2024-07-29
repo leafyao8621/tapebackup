@@ -10,7 +10,8 @@ const static char *msg =
     "Usage: tbcli [OPTIONS] <MODE> <DEVICE/REPORT>\n"
     "Arguments:\n"
     "<MODE>    [possible values: read, write, report]\n"
-    "<DEVICE/REPORT> [possible values for report: daily, list, lookup]\n\n"
+    "<DEVICE/REPORT>\n"
+    "[possible values for report: daily, list, lookup, transaction]\n\n"
     "Options:\n"
     "-p <PATH>\n"
     "-i <READ BLOCK SIZE>\n"
@@ -248,6 +249,27 @@ int main(int argc, char **argv) {
                     app.report_lookup(path, format_enum, ofs);
                 } else {
                     app.report_lookup(path, format_enum, std::cout);
+                }
+            }
+            if (!strcmp(argv[optind + 1], "transaction")) {
+                if (!beginning_set) {
+                    beginning = "1900-01-01";
+                }
+                if (!ending_set) {
+                    ending = "2100-01-01";
+                }
+                TBCLI::Report::Format format_enum = TBCLI::Report::Format::TEXT;
+                if (format_set) {
+                    if (!strcmp(format.c_str(), "CSV")) {
+                        format_enum = TBCLI::Report::Format::CSV;
+                    }
+                }
+                if (export_file_name_set) {
+                    std::ofstream ofs(export_file_name);
+                    app.report_transaction(beginning, ending, format_enum, ofs);
+                } else {
+                    app.report_transaction(
+                        beginning, ending, format_enum, std::cout);
                 }
             }
         }

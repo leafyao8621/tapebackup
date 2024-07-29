@@ -41,6 +41,13 @@ namespace TBCLI {
         void operator()(
             sqlite3_stmt *stmt, Format format, std::ostream &out);
     };
+    class ReportTransaction : Report {
+    public:
+        void report_text(sqlite3_stmt *stmt, std::ostream &os);
+        void report_csv(sqlite3_stmt *stmt, std::ostream &os);
+        void operator()(
+            sqlite3_stmt *stmt, Format format, std::ostream &out);
+    };
 }
 
 #endif

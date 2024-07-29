@@ -15,3 +15,7 @@
 ../tbcli -p tes -f CSV report lookup
 ../tbcli -p tes -x lookup.txt report lookup
 ../tbcli -p tes -f CSV -x lookup.csv report lookup
+../tbcli -b "2024-07-01" -e "2024-08-01" report transaction
+../tbcli -b "2024-07-01" -e "2024-08-01" -f CSV report transaction
+../tbcli -b "2024-07-01" -e "2024-08-01" -x transaction.txt report transaction
+../tbcli -b "2024-07-01" -e "2024-08-01" -f CSV -x transaction.csv report transaction

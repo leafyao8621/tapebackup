@@ -259,10 +259,10 @@ std::string TBCLI::Connector::get_file_name(char *signature) const {
     return fn;
 }
 
-void TBCLI::Connector::set_start_time(char *signature) const {
-    time_t cur_time = time(NULL);
+void TBCLI::Connector::set_start_time(
+    char *signature, time_t start_time) const {
     int ret =
-        sqlite3_bind_int64(this->stmt_set_start_time, 1, cur_time);
+        sqlite3_bind_int64(this->stmt_set_start_time, 1, start_time);
     if (ret) {
         this->print_err();
         throw Err::STMT_BIND;
@@ -285,10 +285,10 @@ void TBCLI::Connector::set_start_time(char *signature) const {
     }
 }
 
-void TBCLI::Connector::set_completion_time(char *signature) const {
-    time_t cur_time = time(NULL);
+void TBCLI::Connector::set_completion_time(
+    char *signature, time_t completion_time) const {
     int ret =
-        sqlite3_bind_int64(this->stmt_set_completion_time, 1, cur_time);
+        sqlite3_bind_int64(this->stmt_set_completion_time, 1, completion_time);
     if (ret) {
         this->print_err();
         throw Err::STMT_BIND;
@@ -355,6 +355,82 @@ void TBCLI::Connector::set_written_size(char *signature, size_t size) const {
         throw Err::STMT_EXECUTION;
     }
     ret = sqlite3_reset(this->stmt_set_written_size);
+    if (ret) {
+        this->print_err();
+        throw Err::STMT_EXECUTION;
+    }
+}
+
+void TBCLI::Connector::add_transaction(
+    char *signature,
+    bool write_protection,
+    char *hmac_key,
+    char *file_name,
+    char *hmac_value,
+    time_t start_time,
+    time_t completion_time,
+    size_t reported_size,
+    size_t written_size) const {
+    int ret =
+        sqlite3_bind_blob(this->stmt_add_transaction, 1, signature, 64, 0);
+    if (ret) {
+        this->print_err();
+        throw Err::STMT_BIND;
+    }
+    ret =
+        sqlite3_bind_int(this->stmt_add_transaction, 2, write_protection);
+    if (ret) {
+        this->print_err();
+        throw Err::STMT_BIND;
+    }
+    ret =
+        sqlite3_bind_blob(this->stmt_add_transaction, 3, hmac_key, 64, 0);
+    if (ret) {
+        this->print_err();
+        throw Err::STMT_BIND;
+    }
+    ret =
+        sqlite3_bind_text(this->stmt_add_transaction, 4, file_name, -1, 0);
+    if (ret) {
+        this->print_err();
+        throw Err::STMT_BIND;
+    }
+    ret =
+        sqlite3_bind_blob(this->stmt_add_transaction, 5, hmac_value, 64, 0);
+    if (ret) {
+        this->print_err();
+        throw Err::STMT_BIND;
+    }
+    ret =
+        sqlite3_bind_int64(this->stmt_add_transaction, 6, start_time);
+    if (ret) {
+        this->print_err();
+        throw Err::STMT_BIND;
+    }
+    ret =
+        sqlite3_bind_int64(this->stmt_add_transaction, 7, completion_time);
+    if (ret) {
+        this->print_err();
+        throw Err::STMT_BIND;
+    }
+    ret =
+        sqlite3_bind_int64(this->stmt_add_transaction, 8, reported_size);
+    if (ret) {
+        this->print_err();
+        throw Err::STMT_BIND;
+    }
+    ret =
+        sqlite3_bind_int64(this->stmt_add_transaction, 9, written_size);
+    if (ret) {
+        this->print_err();
+        throw Err::STMT_BIND;
+    }
+    ret = sqlite3_step(this->stmt_add_transaction);
+    if (ret != SQLITE_DONE) {
+        this->print_err();
+        throw Err::STMT_EXECUTION;
+    }
+    ret = sqlite3_reset(this->stmt_add_transaction);
     if (ret) {
         this->print_err();
         throw Err::STMT_EXECUTION;
@@ -445,4 +521,37 @@ void TBCLI::Connector::report_lookup(
     }
     ReportLookup report;
     report(this->stmt_report_lookup, format, os);
+}
+
+void TBCLI::Connector::report_transaction(
+    std::string beginning,
+    std::string ending,
+    Report::Format format,
+    std::ostream &os) const {
+    int ret =
+        sqlite3_bind_text(
+            this->stmt_report_transaction,
+            1,
+            beginning.c_str(),
+            beginning.size(),
+            0
+        );
+    if (ret) {
+        this->print_err();
+        throw Err::STMT_BIND;
+    }
+    ret =
+        sqlite3_bind_text(
+            this->stmt_report_transaction,
+            2,
+            ending.c_str(),
+            ending.size(),
+            0
+        );
+    if (ret) {
+        this->print_err();
+        throw Err::STMT_BIND;
+    }
+    ReportTransaction report;
+    report(this->stmt_report_transaction, format, os);
 }
