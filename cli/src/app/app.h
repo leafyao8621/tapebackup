@@ -40,6 +40,7 @@ namespace TBCLI {
         void write(char *dev, char *path, bool write_protect, bool verbose);
         void read(char *dev, char *path, bool verbose);
         void read(char *dev, bool verbose);
+        void reset(char *dev, char *signature, bool verbose);
         void report_daily(
             std::string beginning,
             std::string ending,

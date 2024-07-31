@@ -45,6 +45,7 @@ namespace TBCLI {
         bool get_write_protection(char *signature) const;
         void add(char *signature, bool write_protection) const;
         void set_write_protection(char *signature) const;
+        void reset_write_protection(char *signature) const;
         void update_file_name(char *signature, char *file_name) const;
         void update_key(char *signature, char *key) const;
         void update_hmac(char *signature, char *hmac) const;

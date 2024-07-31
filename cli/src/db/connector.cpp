@@ -111,6 +111,10 @@ TBCLI::Connector::Connector() {
             &this->stmt_set_write_protection,
             NULL
         );
+    if (ret) {
+        this->print_err();
+        throw Err::STMT_CREATION;
+    }
     ret =
         sqlite3_prepare_v2(
             this->conn,

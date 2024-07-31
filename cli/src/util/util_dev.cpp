@@ -83,3 +83,22 @@ void TBCLI::Util::set_dev_write_protection(char *dev_name) {
     }
     close(dev);
 }
+
+void TBCLI::Util::reset_dev_write_protection(char *dev_name) {
+    char buf[64];
+    int dev = open(dev_name, O_RDWR);
+    if (dev == -1) {
+        close(dev);
+        throw DEVICE_OPEN;
+    }
+    if (read(dev, buf, 64) == -1) {
+        close(dev);
+        throw DEVICE_OPEN;
+    }
+    memset(buf, 0, 64);
+    if (write(dev, buf, 64) != 64) {
+        close(dev);
+        throw DEVICE_WRITE;
+    }
+    close(dev);
+}

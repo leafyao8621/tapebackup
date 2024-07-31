@@ -101,6 +101,30 @@ void TBCLI::Connector::set_write_protection(char *signature) const {
     }
 }
 
+void TBCLI::Connector::reset_write_protection(char *signature) const {
+    int ret = sqlite3_bind_int(this->stmt_set_write_protection, 1, false);
+    if (ret) {
+        this->print_err();
+        throw Err::STMT_BIND;
+    }
+    ret =
+        sqlite3_bind_blob(this->stmt_set_write_protection, 2, signature, 64, 0);
+    if (ret) {
+        this->print_err();
+        throw Err::STMT_BIND;
+    }
+    ret = sqlite3_step(this->stmt_set_write_protection);
+    if (ret != SQLITE_DONE) {
+        this->print_err();
+        throw Err::STMT_EXECUTION;
+    }
+    ret = sqlite3_reset(this->stmt_set_write_protection);
+    if (ret) {
+        this->print_err();
+        throw Err::STMT_EXECUTION;
+    }
+}
+
 void TBCLI::Connector::update_file_name(
     char *signature, char *file_name) const {
     int ret =

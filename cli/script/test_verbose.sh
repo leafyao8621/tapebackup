@@ -19,3 +19,5 @@
 ../tbcli -b "2024-07-01" -e "2024-08-01" -f CSV report transaction
 ../tbcli -b "2024-07-01" -e "2024-08-01" -x transaction.txt report transaction
 ../tbcli -b "2024-07-01" -e "2024-08-01" -f CSV -x transaction.csv report transaction
+../tbcli -p ~/test/ -w -v write ~/dummy.img
+../tbcli -p ~/test/ -v write ~/dummy.img

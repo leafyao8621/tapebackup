@@ -120,7 +120,9 @@ namespace TBCLI {
         void init_dev(
             char *dev_name, char *signature, bool write_protection);
         void set_dev_write_protection(char *dev_name);
+        void reset_dev_write_protection(char *dev_name);
         void get_hex(char *buf, char *out);
+        void parse_hex(char *buf, char *out);
     }
 }
 

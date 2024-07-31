@@ -9,7 +9,7 @@
 const static char *msg =
     "Usage: tbcli [OPTIONS] <MODE> <DEVICE/REPORT>\n"
     "Arguments:\n"
-    "<MODE>    [possible values: read, write, report]\n"
+    "<MODE>    [possible values: read, write, reset, report]\n"
     "<DEVICE/REPORT>\n"
     "[possible values for report: daily, list, lookup, transaction]\n\n"
     "Options:\n"
@@ -22,6 +22,7 @@ const static char *msg =
     "-e <ENDING DATE>\n"
     "-f <FORMAT> [possible values: TEXT, CSV]\n"
     "-x <EXPORT FILE NAME>\n"
+    "-s <SIGNATURE>\n"
     "-w\n"
     "-v";
 
@@ -36,6 +37,7 @@ int main(int argc, char **argv) {
     bool ending_set = false;
     bool format_set = false;
     bool export_file_name_set = false;
+    bool signature_set = false;
     size_t block_size_read = 0;
     size_t block_size_write = 0;
     size_t block_size_hmac = 0;
@@ -45,12 +47,14 @@ int main(int argc, char **argv) {
     std::string ending = "";
     std::string format = "";
     std::string export_file_name = "";
+    std::string signature = "";
     bool write_protect = false;
     bool read = false;
     bool write = false;
     bool report = false;
     bool verbose = false;
-    for (; (ret = getopt(argc, argv, "p:i:o:h:a:b:e:f:x:wv")) != -1;) {
+    bool reset = false;
+    for (; (ret = getopt(argc, argv, "p:i:o:h:a:b:e:f:x:s:wv")) != -1;) {
         switch (ret) {
         case 'p':
             path_set = true;
@@ -104,6 +108,10 @@ int main(int argc, char **argv) {
             export_file_name_set = true;
             export_file_name = optarg;
             break;
+        case 's':
+            signature_set = true;
+            signature = optarg;
+            break;
         case 'w':
             write_protect = true;
             break;
@@ -131,17 +139,24 @@ int main(int argc, char **argv) {
     if (!strcmp(argv[optind], "write")) {
         write = true;
     }
+    if (!strcmp(argv[optind], "reset")) {
+        reset = true;
+    }
     if (!strcmp(argv[optind], "report")) {
         report = true;
     }
-    if (!read && !write && !report) {
+    if (!read && !write && !report && !reset) {
         std::cerr << msg << std::endl;
         return -1;
     } else if (write && !path_set) {
         std::cerr << msg << std::endl;
         return -1;
+    } else if (reset) {
+        if (!signature_set || signature.size() != 128) {
+            std::cerr << msg << std::endl;
+            return -1;
+        }
     }
-
     try {
         TBCLI::App app;
         if (write) {
@@ -191,6 +206,13 @@ int main(int argc, char **argv) {
                     verbose
                 );
             }
+        }
+        if (reset) {
+            std::string dev = argv[optind + 1];
+
+            char buf[64];
+            TBCLI::Util::parse_hex((char*)signature.c_str(), buf);
+            app.reset((char*)dev.c_str(), buf, verbose);
         }
         if (report) {
             if (!strcmp(argv[optind + 1], "daily")) {
