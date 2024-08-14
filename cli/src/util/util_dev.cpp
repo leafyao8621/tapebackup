@@ -12,8 +12,7 @@ void TBCLI::Util::check_dev(char *dev_name, char *signature) {
         throw DEVICE_OPEN;
     }
     if (read(dev, signature, 64) == -1) {
-        close(dev);
-        throw DEVICE_OPEN;
+        memset(signature, 0, 64);
     }
     close(dev);
 }
