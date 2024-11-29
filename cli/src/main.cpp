@@ -194,18 +194,11 @@ int main(int argc, char **argv) {
             if (archive_set) {
                 app.set_block_size_archive(block_size_archive);
             }
-            if (path_set) {
-                app.read(
-                    (char*)dev.c_str(),
-                    (char*)path.c_str(),
-                    verbose
-                );
-            } else {
-                app.read(
-                    (char*)dev.c_str(),
-                    verbose
-                );
-            }
+            app.read(
+                (char*)dev.c_str(),
+                (char*)path.c_str(),
+                verbose
+            );
         }
         if (reset) {
             std::string dev = argv[optind + 1];
@@ -414,6 +407,15 @@ int main(int argc, char **argv) {
             break;
         case TBCLI::Util::Writer::Err::WRITE:
             std::cerr << "WRITER WRITE" << std::endl;
+            break;
+        case TBCLI::Util::Writer::Err::CIPHER_INIT:
+            std::cerr << "WRITER CIPHER_INIT" << std::endl;
+            break;
+        case TBCLI::Util::Writer::Err::CIPHER_UPDATE:
+            std::cerr << "WRITER CIPHER_UPDATE" << std::endl;
+            break;
+        case TBCLI::Util::Writer::Err::CIPHER_FINAL:
+            std::cerr << "WRITER CIPHER_FINAL" << std::endl;
             break;
         }
         return 7;

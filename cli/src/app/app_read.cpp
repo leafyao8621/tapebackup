@@ -46,12 +46,13 @@ void TBCLI::App::read(
                 size_t block_size,
                 char *path,
                 char *dev,
+                char *key,
                 bool verbose,
                 std::mutex &mutex,
                 bool &failure) {
                 try {
                     Util::Reader reader(block_size);
-                    reader(dev, path, verbose, mutex);
+                    reader(dev, path, key, verbose, mutex);
                 } catch (Util::Reader::Err) {
                     failure = true;
                 }
@@ -59,6 +60,7 @@ void TBCLI::App::read(
             this->block_size_read,
             (char*)archive_path.c_str(),
             dev,
+            this->hmac_key,
             verbose,
             std::ref(this->mutex),
             std::ref(failure)

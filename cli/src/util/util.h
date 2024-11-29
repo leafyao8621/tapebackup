@@ -87,32 +87,50 @@ namespace TBCLI {
         class Writer {
             int fd_in, fd_out;
             char *buf;
+            char *cipher_buf;
             size_t block_size;
+            EVP_CIPHER_CTX *ctx;
         public:
             enum Err {
                 OPEN,
                 READ,
-                WRITE
+                WRITE,
+                CIPHER_INIT,
+                CIPHER_UPDATE,
+                CIPHER_FINAL
             };
             Writer(size_t block_size);
             ~Writer();
             size_t operator()(
-                char *path, char *dev, bool verbose, std::mutex &mutex);
+                char *path,
+                char *dev,
+                char *key,
+                bool verbose,
+                std::mutex &mutex);
         };
         class Reader {
             int fd_in, fd_out;
             char *buf;
+            char *cipher_buf;
             size_t block_size;
+            EVP_CIPHER_CTX *ctx;
         public:
             enum Err {
                 OPEN,
                 READ,
-                WRITE
+                WRITE,
+                CIPHER_INIT,
+                CIPHER_UPDATE,
+                CIPHER_FINAL
             };
             Reader(size_t block_size);
             ~Reader();
             void operator()(
-                char *dev, char *path, bool verbose, std::mutex &mutex);
+                char *dev,
+                char *path,
+                char *key,
+                bool verbose,
+                std::mutex &mutex);
         };
         void get_dir(std::string path, std::vector<std::string> &listing);
         void check_dev(char *dev_name, char *signature);

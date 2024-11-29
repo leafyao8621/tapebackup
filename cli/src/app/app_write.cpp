@@ -71,13 +71,14 @@ void TBCLI::App::write(
                 size_t block_size,
                 char *path,
                 char *dev,
+                char *key,
                 bool verbose,
                 std::mutex &mutex,
                 bool &failure,
                 size_t &written_size) {
                 try {
                     Util::Writer writer(block_size);
-                    written_size = writer(path, dev, verbose, mutex);
+                    written_size = writer(path, dev, key, verbose, mutex);
                 } catch (Util::Writer::Err) {
                     failure = true;
                 }
@@ -85,6 +86,7 @@ void TBCLI::App::write(
             this->block_size_write,
             (char*)archive_path.c_str(),
             dev,
+            this->hmac_key,
             verbose,
             std::ref(this->mutex),
             std::ref(failure),
