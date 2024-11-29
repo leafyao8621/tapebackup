@@ -5,7 +5,7 @@ OBJ = $(SRC:.cpp=.o)
 BIN = tbendec
 
 %.o: %.cpp
-	$(CPP) -g -c $< -o $@ $(CPPFLAGS)
+	$(CPP) -O3 -c $< -o $@ $(CPPFLAGS)
 
 $(BIN): $(OBJ)
 	$(CPP) $(OBJ) -o $(BIN) -lcrypto -lsqlite3 -pthread -larchive
