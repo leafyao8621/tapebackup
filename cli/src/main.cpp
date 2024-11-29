@@ -419,13 +419,35 @@ int main(int argc, char **argv) {
             break;
         }
         return 7;
+    }  catch (TBCLI::Util::Reader::Err err) {
+        switch (err) {
+        case TBCLI::Util::Reader::Err::OPEN:
+            std::cerr << "Reader OPEN" << std::endl;
+            break;
+        case TBCLI::Util::Reader::Err::READ:
+            std::cerr << "Reader READ" << std::endl;
+            break;
+        case TBCLI::Util::Reader::Err::WRITE:
+            std::cerr << "Reader WRITE" << std::endl;
+            break;
+        case TBCLI::Util::Reader::Err::CIPHER_INIT:
+            std::cerr << "Reader CIPHER_INIT" << std::endl;
+            break;
+        case TBCLI::Util::Reader::Err::CIPHER_UPDATE:
+            std::cerr << "Reader CIPHER_UPDATE" << std::endl;
+            break;
+        case TBCLI::Util::Reader::Err::CIPHER_FINAL:
+            std::cerr << "Reader CIPHER_FINAL" << std::endl;
+            break;
+        }
+        return 8;
     } catch (TBCLI::Report::Err err) {
         switch (err) {
         case TBCLI::Report::Err::STMT_EXECUTION:
             std::cerr << "REPORT STMT_EXECUTION" << std::endl;
             break;
         }
-        return 7;
+        return 9;
     }
     return 0;
 }
