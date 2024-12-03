@@ -47,11 +47,21 @@ void TBENDEC::App::encrypt(
     std::string dev_path = std::string(dev);
     slash = dev_path.find_last_of('/') + 1;
     std::string dev_name = dev_path.substr(slash, dev_path.size() - slash);
-    this->conn.add(
-        (char*)dev_name.c_str(),
-        this->hmac_md,
-        this->hmac_key,
-        (char*)file_name.c_str());
+    if (this->conn.check((char*)dev_name.c_str())) {
+        this->conn.update(
+            (char*)dev_name.c_str(),
+            (char*)file_name.c_str(),
+            this->hmac_md,
+            this->hmac_key
+        );
+    } else {
+        this->conn.add(
+            (char*)dev_name.c_str(),
+            (char*)file_name.c_str(),
+            this->hmac_md,
+            this->hmac_key
+        );
+    }
     if (verbose) {
         std::cout << "Encrypt operation completed" << std::endl;
     }

@@ -4,23 +4,23 @@
 #include "connector.h"
 
 void TBENDEC::Connector::add(
-    char *dev, char *hmac, char *key, char *file_name) const {
+    char *dev, char *file_name, char *hmac, char *key) const {
     int ret = sqlite3_bind_text(this->stmt_add, 1, dev, -1, 0);
     if (ret) {
         this->print_err();
         throw Err::STMT_BIND;
     }
-    ret = sqlite3_bind_blob(this->stmt_add, 2, hmac, 64, 0);
+    ret = sqlite3_bind_text(this->stmt_add, 2, file_name, -1, 0);
     if (ret) {
         this->print_err();
         throw Err::STMT_BIND;
     }
-    ret = sqlite3_bind_blob(this->stmt_add, 3, key, 64, 0);
+    ret = sqlite3_bind_blob(this->stmt_add, 3, hmac, 64, 0);
     if (ret) {
         this->print_err();
         throw Err::STMT_BIND;
     }
-    ret = sqlite3_bind_text(this->stmt_add, 4, file_name, -1, 0);
+    ret = sqlite3_bind_blob(this->stmt_add, 4, key, 64, 0);
     if (ret) {
         this->print_err();
         throw Err::STMT_BIND;
@@ -60,6 +60,40 @@ bool TBENDEC::Connector::check(char *dev) const {
         throw Err::STMT_EXECUTION;
     }
     return res;
+}
+
+void TBENDEC::Connector::update(
+    char *dev, char *file_name, char *hmac, char *key) const {
+    int ret = sqlite3_bind_text(this->stmt_update, 4, dev, -1, 0);
+    if (ret) {
+        this->print_err();
+        throw Err::STMT_BIND;
+    }
+    ret = sqlite3_bind_text(this->stmt_update, 1, file_name, -1, 0);
+    if (ret) {
+        this->print_err();
+        throw Err::STMT_BIND;
+    }
+    ret = sqlite3_bind_blob(this->stmt_update, 2, hmac, 64, 0);
+    if (ret) {
+        this->print_err();
+        throw Err::STMT_BIND;
+    }
+    ret = sqlite3_bind_blob(this->stmt_update, 3, key, 64, 0);
+    if (ret) {
+        this->print_err();
+        throw Err::STMT_BIND;
+    }
+    ret = sqlite3_step(this->stmt_update);
+    if (ret != SQLITE_DONE) {
+        this->print_err();
+        throw Err::STMT_EXECUTION;
+    }
+    ret = sqlite3_reset(this->stmt_update);
+    if (ret) {
+        this->print_err();
+        throw Err::STMT_EXECUTION;
+    }
 }
 
 void TBENDEC::Connector::get_key(char *dev, char *key) const {

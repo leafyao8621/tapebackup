@@ -15,10 +15,10 @@ TBENDEC::Connector::Connector() {
         sqlite3_prepare_v2(
             this->conn,
             "CREATE TABLE IF NOT EXISTS MAIN ("
-            "DEV TEXT,"
-            "HMAC BLOB(64) PRIMARY KEY,"
-            "HMAC_KEY BLOB(64),"
-            "FILE_NAME TEXT"
+            "DEV TEXT PRIMARY KEY,"
+            "FILE_NAME TEXT,"
+            "HMAC BLOB(64),"
+            "HMAC_KEY BLOB(64)"
             ")",
             -1,
             &this->stmt_init,
@@ -52,6 +52,23 @@ TBENDEC::Connector::Connector() {
             "SELECT COUNT(DEV) FROM MAIN WHERE DEV = ?",
             -1,
             &this->stmt_check,
+            NULL
+        );
+    if (ret) {
+        this->print_err();
+        throw Err::STMT_CREATION;
+    }
+    ret =
+        sqlite3_prepare_v2(
+            this->conn,
+            "UPDATE MAIN SET "
+            "FILE_NAME = ?,"
+            "HMAC = ?,"
+            "HMAC_KEY = ? "
+            "WHERE "
+            "DEV = ?",
+            -1,
+            &this->stmt_update,
             NULL
         );
     if (ret) {
@@ -100,6 +117,7 @@ TBENDEC::Connector::~Connector() {
     sqlite3_finalize(this->stmt_init);
     sqlite3_finalize(this->stmt_add);
     sqlite3_finalize(this->stmt_check);
+    sqlite3_finalize(this->stmt_update);
     sqlite3_finalize(this->stmt_get_key);
     sqlite3_finalize(this->stmt_get_hmac);
     sqlite3_finalize(this->stmt_get_file_name);
